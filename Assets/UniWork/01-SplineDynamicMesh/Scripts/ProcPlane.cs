@@ -35,14 +35,15 @@ public class ProcPlane : MonoBehaviour
     {
         m_Vertices = new List<Vector3>();
         m_Tris = new List<int>();
-      
+        Vector3 Offset = m_CellOffset + ChunkScale *2;
+
         for(int i = 0; i < m_GridSize.x; i++)
         {
             for(int j = 0; j < m_GridSize.y; j++)
             {
                 for (int k = 0; k < m_GridSize.z; k++)
                 {
-                    GenCube(new Vector3(i * m_CellOffset.x, j * m_CellOffset.y, k * m_CellOffset.z), m_Vertices.Count);
+                    GenCube(new Vector3(i * Offset.x, j * Offset.y, k * Offset.z), m_Vertices.Count);
                 }
             }
         }
@@ -65,10 +66,10 @@ public class ProcPlane : MonoBehaviour
 
 
         // - Z Face
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, 0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, 0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, -0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, -0.5f, -0.5f));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, -ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, -ChunkScale.y, -ChunkScale.z));
         m_Tris.Add(RefTri + 0);
         m_Tris.Add(RefTri + 1);
         m_Tris.Add(RefTri + 3);
@@ -77,10 +78,10 @@ public class ProcPlane : MonoBehaviour
         m_Tris.Add(RefTri + 3);
 
         // + Z Face
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, 0.5f, 0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, 0.5f, 0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, -0.5f, 0.5f));
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, -0.5f, 0.5f));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, ChunkScale.y, ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, ChunkScale.y, ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, -ChunkScale.y, ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, -ChunkScale.y, ChunkScale.z));
         m_Tris.Add(RefTri + 4);
         m_Tris.Add(RefTri + 7);
         m_Tris.Add(RefTri + 5);
@@ -89,10 +90,10 @@ public class ProcPlane : MonoBehaviour
         m_Tris.Add(RefTri + 6);
 
         // - X Face
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, 0.5f, 0.5f));
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, 0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, -0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, -0.5f, 0.5f));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, ChunkScale.y, ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, -ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, -ChunkScale.y, ChunkScale.z));
         m_Tris.Add(RefTri + 8);
         m_Tris.Add(RefTri + 9);
         m_Tris.Add(RefTri + 11);
@@ -101,10 +102,10 @@ public class ProcPlane : MonoBehaviour
         m_Tris.Add(RefTri + 11);
 
         // + X Face
-        m_Vertices.Add(RefPos + new Vector3(0.5f, 0.5f, 0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, 0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, -0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, -0.5f, 0.5f));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, ChunkScale.y, ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, -ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, -ChunkScale.y, ChunkScale.z));
         m_Tris.Add(RefTri + 12);
         m_Tris.Add(RefTri + 15);
         m_Tris.Add(RefTri + 13);
@@ -113,10 +114,10 @@ public class ProcPlane : MonoBehaviour
         m_Tris.Add(RefTri + 14);
 
         // - Y Face
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, -0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, -0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, -0.5f, 0.5f));
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, -0.5f, 0.5f));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, -ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, -ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, -ChunkScale.y, ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, -ChunkScale.y, ChunkScale.z));
         m_Tris.Add(RefTri + 16);
         m_Tris.Add(RefTri + 17);
         m_Tris.Add(RefTri + 19);
@@ -126,10 +127,10 @@ public class ProcPlane : MonoBehaviour
 
 
         // + Y Face
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, 0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, 0.5f, -0.5f));
-        m_Vertices.Add(RefPos + new Vector3(0.5f, 0.5f, 0.5f));
-        m_Vertices.Add(RefPos + new Vector3(-0.5f, 0.5f, 0.5f));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, ChunkScale.y, -ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, ChunkScale.y, ChunkScale.z));
+        m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, ChunkScale.y, ChunkScale.z));
         m_Tris.Add(RefTri + 20);
         m_Tris.Add(RefTri + 23);
         m_Tris.Add(RefTri + 21);
