@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,6 +18,14 @@ public class ProcPlane : MonoBehaviour
     [SerializeField] private Vector3Int m_GridSize;
     [SerializeField] private Vector3 m_CellOffset;
 
+    public Vector3 CellOffset
+
+    {
+
+        get { return m_CellOffset; }
+        set { m_CellOffset = value; }
+
+    }
 
     private void Awake()
     {
@@ -26,9 +35,15 @@ public class ProcPlane : MonoBehaviour
         m_Filter.mesh = m_Mesh;
     }
 
-    private void OnValidate()
+    public void OnValidate()
     {
+        if (m_Mesh == null)
+        {
+            m_Filter = GetComponent<MeshFilter>();
+            m_Mesh = new Mesh { name = "Proc Mesh" };
+        }
         GenMesh();
+        m_Filter.mesh = m_Mesh;
     }
 
     private void GenMesh()
@@ -62,9 +77,6 @@ public class ProcPlane : MonoBehaviour
     }
     private void GenCube(Vector3 RefPos,int RefTri)
     {
-
-
-
         // - Z Face
         m_Vertices.Add(RefPos + new Vector3(-ChunkScale.x, ChunkScale.y, -ChunkScale.z));
         m_Vertices.Add(RefPos + new Vector3(ChunkScale.x, ChunkScale.y, -ChunkScale.z));
@@ -139,4 +151,25 @@ public class ProcPlane : MonoBehaviour
         m_Tris.Add(RefTri + 22);
 
     }
+}
+
+
+[CustomEditor(typeof(ProcPlane)), CanEditMultipleObjects]
+public class ProcPlaneEditor : Editor
+{
+    private void OnSceneGUI()
+    {
+        ProcPlane Plane = (ProcPlane)target;
+        EditorGUI.BeginChangeCheck();
+        Vector3 newCellOffset = Handles.PositionHandle(Plane.transform.position + Plane.transform.TransformVector(Plane.CellOffset), Plane.transform.rotation);
+        if (EditorGUI.EndChangeCheck())
+        {
+            Undo.RecordObject(Plane, $"Changed the Cell Offset of {Plane.gameObject.name}");
+            Plane.CellOffset= Plane.transform.InverseTransformVector(newCellOffset - Plane.transform.position);
+            Plane.OnValidate();
+
+        }
+
+    }
+
 }
