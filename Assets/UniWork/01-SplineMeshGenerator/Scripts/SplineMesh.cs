@@ -64,9 +64,8 @@ public class SplineMesh : MonoBehaviour
             Vector3 Point = Position + (right * m_Offset);
             BuildMesh(Point,i*step<Resolution);
         }
-
-        if (!m_SplineContainer.Spline.Closed)
-            BuildEnds(m_Verts.Count);
+        
+        BuildEnds(m_SplineContainer.Spline.Closed);
 
         m_Mesh.Clear();
         m_Mesh.SetVertices(m_Verts);
@@ -104,25 +103,42 @@ public class SplineMesh : MonoBehaviour
 
             m_Tris.AddRange(new int[] { RefTri - 2, RefTri - 6, RefTri - 1 });
             m_Tris.AddRange(new int[] { RefTri -6 , RefTri -5 , RefTri - 1 });
-
-
         }
     }
 
-    void BuildEnds(int Verts)
+    void BuildEnds(bool Looped)
     {
-        Verts -= 1;
-        //First
-        m_Tris.AddRange(new int[] { 1, 0, 2 });
-        m_Tris.AddRange(new int[] { 2, 0, 3 });
+        int RefTri = m_Verts.Count - 1;
+        if (Looped)
+        {
+            m_Tris.AddRange(new int[] { RefTri -3 , 0 , RefTri});
+            m_Tris.AddRange(new int[] { 0, 3, RefTri});
 
-/*        //Last
-        m_Tris.AddRange(new int[] { Verts -1,Verts -3,  Verts-2 });
-        m_Tris.AddRange(new int[] { Verts -1,Verts,     Verts-3 });*/
+            m_Tris.AddRange(new int[] { RefTri-2 , 1 , 0});
+            m_Tris.AddRange(new int[] { 0, RefTri - 3, RefTri - 2});
+
+            m_Tris.AddRange(new int[] { 1, RefTri-2,2});
+            m_Tris.AddRange(new int[] { RefTri - 2, RefTri - 1, 2});
+
+            m_Tris.AddRange(new int[] { 2, RefTri - 1, RefTri });
+            m_Tris.AddRange(new int[] { RefTri, 3,2});
+        }
+        else
+        {
+            //First
+            m_Tris.AddRange(new int[] { 1, 0, 2 });
+            m_Tris.AddRange(new int[] { 2, 0, 3 });
+
+           //Last
+            m_Tris.AddRange(new int[] { RefTri-3,RefTri-2,RefTri });
+            m_Tris.AddRange(new int[] { RefTri- 2, RefTri-1, RefTri});
+
+        }
+        
 
     }
 
-    private void OnDrawGizmos()
+/*    private void OnDrawGizmos()
     {
         Handles.matrix = transform.localToWorldMatrix;
         Handles.color = Color.red;Handles.SphereHandleCap(0, m_Verts[0], Quaternion.identity, 0.1f, EventType.Repaint);
@@ -142,5 +158,5 @@ public class SplineMesh : MonoBehaviour
                 Handles.color = Color.red;
                 Handles.SphereHandleCap(0, m_Verts[m_Verts.Count-1], Quaternion.identity, 0.1f, EventType.Repaint);
         
-    }
+    }*/
 }
