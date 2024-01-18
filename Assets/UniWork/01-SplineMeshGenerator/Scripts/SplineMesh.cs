@@ -9,8 +9,8 @@ using UnityEngine;
 public class SplineMesh : MonoBehaviour
 {
     //Spline Stuff
-    [SerializeField] private SplineContainer m_SplineContainer;
-    [SerializeField] private int m_Index;
+    private SplineContainer m_SplineContainer;
+    private int m_Index;
 
     private float3 Position;
     private float3 Tangent;
@@ -18,9 +18,9 @@ public class SplineMesh : MonoBehaviour
 
 
     //TrackGeneration Variables
-    [SerializeField] [Range(1,500)]int Resolution;
-    [SerializeField] [Range(-4,4)]float m_Offset;
-    [SerializeField] Vector2 Scale = Vector2.one;
+    int m_Resolution;
+    protected float m_Offset;
+    protected Vector2 m_Scale = Vector2.one;
 
 
     private MeshFilter m_Filter;
@@ -29,14 +29,19 @@ public class SplineMesh : MonoBehaviour
     private List<Vector3> m_Verts;
     private List<int> m_Tris;
 
-
-    private void Awake()
+    public void Init(SplineContainer Spline,int SplineIndex,int Resolution, float Offset, Vector2 Scale)
     {
+        m_SplineContainer = Spline;
+        m_Resolution = Resolution;
+        m_Offset = Offset;
+        m_Scale = Scale;
+
         m_Filter = GetComponent<MeshFilter>();
         m_Mesh = new Mesh { name = "Track Mesh" };
         GenerateMesh();
         m_Filter.mesh = m_Mesh;
     }
+
     public void OnValidate()
     {
         if (m_Mesh == null)
@@ -54,15 +59,15 @@ public class SplineMesh : MonoBehaviour
         m_Verts = new List<Vector3>();
         m_Tris = new List<int>();
 
-        float step = 1f / (float)Resolution;
+        float step = 1f / (float)m_Resolution;
 
-        for (int i = 0; i < Resolution; i++)
+        for (int i = 0; i < m_Resolution; i++)
         {
             float t = step * i;
             m_SplineContainer.Evaluate(m_Index, t, out Position, out Tangent, out UpVector);
             float3 right = Vector3.Cross(Tangent, UpVector).normalized;
-            Vector3 Point = Position + (right * m_Offset);
-            BuildMesh(Point,i*step<Resolution);
+            Vector3 Point1 = Position + (right * m_Offset);
+            BuildMesh(Point1,i*step< m_Resolution);
         }
         
         BuildEnds(m_SplineContainer.Spline.Closed);
@@ -78,10 +83,10 @@ public class SplineMesh : MonoBehaviour
         // Z Face
         Vector3 Right = Vector3.Cross(Tangent, UpVector).normalized;
         Vector3 Up = (Vector3)UpVector;
-        m_Verts.Add(SegmentPos + (-Right * Scale.x + Up * Scale.y)); //TR 0
-        m_Verts.Add(SegmentPos + (Right * Scale.x + Up * Scale.y)); //TL 1
-        m_Verts.Add(SegmentPos + (Right * Scale.x + -Up * Scale.y)); //BL 2
-        m_Verts.Add(SegmentPos + (-Right * Scale.x + -Up * Scale.y)); //BR 3
+        m_Verts.Add(SegmentPos + (-Right * m_Scale.x + Up * m_Scale.y)); //TR 0
+        m_Verts.Add(SegmentPos + (Right * m_Scale.x + Up * m_Scale.y)); //TL 1
+        m_Verts.Add(SegmentPos + (Right * m_Scale.x + -Up * m_Scale.y)); //BL 2
+        m_Verts.Add(SegmentPos + (-Right * m_Scale.x + -Up * m_Scale.y)); //BR 3
         int RefTri = m_Verts.Count -1;
         Debug.Log(RefTri);
         if(RefTri >= 7)
