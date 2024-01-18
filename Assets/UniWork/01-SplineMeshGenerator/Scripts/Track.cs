@@ -12,21 +12,26 @@ public class Track : MonoBehaviour
     [SerializeField] private int m_Index;
 
     //Rails
-    [SerializeField] Vector2 m_RailScale = Vector2.one;
+    [SerializeField] Vector2 m_RailScale = new Vector2(.1f,.1f);
     [SerializeField] SplineMesh OuterTrack;
     [SerializeField] SplineMesh InnerTrack;
 
     //Sleepers
-
+    [SerializeField] float SleeperDistance;
+    [SerializeField] Vector3 m_SleeperScale = Vector3.one;
+    
     //Supports
+
     private void Awake()
     {
         m_SplineContainer = GetComponent<SplineContainer>();
         if(!m_SplineContainer)
             return;
+
         OuterTrack.Init(m_SplineContainer, m_Index,Resolution, +m_Offset, m_RailScale);
         InnerTrack.Init(m_SplineContainer, m_Index, Resolution,-m_Offset, m_RailScale);
     }
+
 
     private void OnValidate()
     {

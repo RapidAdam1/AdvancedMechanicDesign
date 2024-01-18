@@ -67,7 +67,7 @@ public class SplineMesh : MonoBehaviour
             m_SplineContainer.Evaluate(m_Index, t, out Position, out Tangent, out UpVector);
             float3 right = Vector3.Cross(Tangent, UpVector).normalized;
             Vector3 Point1 = Position + (right * m_Offset);
-            BuildMesh(Point1,i*step< m_Resolution);
+            BuildMesh(Point1);
         }
         
         BuildEnds(m_SplineContainer.Spline.Closed);
@@ -78,7 +78,7 @@ public class SplineMesh : MonoBehaviour
         m_Mesh.RecalculateNormals();
     }
 
-    private void BuildMesh(Vector3 SegmentPos,bool IsLast)
+    private void BuildMesh(Vector3 SegmentPos)
     {
         // Z Face
         Vector3 Right = Vector3.Cross(Tangent, UpVector).normalized;
@@ -88,7 +88,6 @@ public class SplineMesh : MonoBehaviour
         m_Verts.Add(SegmentPos + (Right * m_Scale.x + -Up * m_Scale.y)); //BL 2
         m_Verts.Add(SegmentPos + (-Right * m_Scale.x + -Up * m_Scale.y)); //BR 3
         int RefTri = m_Verts.Count -1;
-        Debug.Log(RefTri);
         if(RefTri >= 7)
         {
             //Red   0 & 4
