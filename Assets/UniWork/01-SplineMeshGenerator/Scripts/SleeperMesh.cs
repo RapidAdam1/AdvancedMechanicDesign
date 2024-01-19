@@ -78,6 +78,9 @@ public class SleeperMesh : MonoBehaviour
         Vector3 right = Vector3.Cross(Tangent, UpVector).normalized;
         Vector3 Up = (Vector3)UpVector;
         Vector3 ForwardVector = Tangent;
+        right.Normalize();
+        Up.Normalize();
+        ForwardVector.Normalize();
         // - Z Face
         m_Vertices.Add(RefPos + (-right * SleeperLength + Up * ChunkScale.y + -ForwardVector * ChunkScale.x));
         m_Vertices.Add(RefPos + (right * SleeperLength + Up * ChunkScale.y + -ForwardVector * ChunkScale.x));
