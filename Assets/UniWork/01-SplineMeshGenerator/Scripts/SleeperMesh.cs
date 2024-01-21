@@ -9,7 +9,7 @@ using UnityEngine;
 public class SleeperMesh : MonoBehaviour
 {
     
-    [SerializeField] Vector2 ChunkScale;
+    [SerializeField] Vector2 SleeperScale;
     [SerializeField] float SleeperLength;
 
     [SerializeField] float SleeperOffset;
@@ -29,6 +29,21 @@ public class SleeperMesh : MonoBehaviour
     private float3 Position;
     private float3 Tangent;
     private float3 UpVector;
+
+    public void Init(SplineContainer Spline, int SplineIndex, float Offset, Vector2 Scale)
+    {
+        m_SplineContainer = Spline;
+        m_Index = SplineIndex;
+        SleeperOffset = Offset;
+        SleeperScale = new Vector2(Scale.x, Scale.y * -1) / 10;
+
+        m_Filter = GetComponent<MeshFilter>();
+        m_Mesh = new Mesh { name = "Track Mesh" };
+        GenMesh();
+        m_Filter.mesh = m_Mesh;
+
+    }
+
     private void Awake()
     {
         m_Filter = GetComponent<MeshFilter>();
@@ -55,7 +70,7 @@ public class SleeperMesh : MonoBehaviour
         m_Tris = new List<int>();
 
         float Length = m_SplineContainer.CalculateLength();
-        float TotalSteps = (int)(Length * (ChunkScale.x+SleeperOffset));
+        float TotalSteps = (int)(Length * (SleeperScale.x+SleeperOffset));
         float Step = 1 / TotalSteps;
 
         for (int i = 0; i < TotalSteps; i++)
@@ -82,10 +97,10 @@ public class SleeperMesh : MonoBehaviour
         Up.Normalize();
         ForwardVector.Normalize();
         // - Z Face
-        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * ChunkScale.y + -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + Up * ChunkScale.y + -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * ChunkScale.y + -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * ChunkScale.y + -ForwardVector * ChunkScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * SleeperScale.y + -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + Up * SleeperScale.y + -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * SleeperScale.y + -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * SleeperScale.y + -ForwardVector * SleeperScale.x));
         m_Tris.Add(RefTri + 0);
         m_Tris.Add(RefTri + 1);
         m_Tris.Add(RefTri + 3);
@@ -94,10 +109,10 @@ public class SleeperMesh : MonoBehaviour
         m_Tris.Add(RefTri + 3);
 
         // + Z Face
-        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * ChunkScale.y + ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * SleeperScale.y + ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
         m_Tris.Add(RefTri + 4);
         m_Tris.Add(RefTri + 7);
         m_Tris.Add(RefTri + 5);
@@ -106,10 +121,10 @@ public class SleeperMesh : MonoBehaviour
         m_Tris.Add(RefTri + 6);
 
         // - X Face
-        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * ChunkScale.y+ -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * ChunkScale.y+ -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * SleeperScale.y+ -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * SleeperScale.y+ -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
         m_Tris.Add(RefTri + 8);
         m_Tris.Add(RefTri + 9);
         m_Tris.Add(RefTri + 11);
@@ -118,10 +133,10 @@ public class SleeperMesh : MonoBehaviour
         m_Tris.Add(RefTri + 11);
 
         // + X Face
-        m_Vertices.Add(RefPos + (right * SleeperLength + Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + Up * ChunkScale.y+ -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * ChunkScale.y+ -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + Up * SleeperScale.y+ -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * SleeperScale.y+ -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
         m_Tris.Add(RefTri + 12);
         m_Tris.Add(RefTri + 15);
         m_Tris.Add(RefTri + 13);
@@ -130,10 +145,10 @@ public class SleeperMesh : MonoBehaviour
         m_Tris.Add(RefTri + 14);
 
         // - Y Face
-        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * ChunkScale.y + -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * ChunkScale.y + -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * SleeperScale.y + -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * SleeperScale.y + -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + -Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + -Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
         m_Tris.Add(RefTri + 16);
         m_Tris.Add(RefTri + 17);
         m_Tris.Add(RefTri + 19);
@@ -143,10 +158,10 @@ public class SleeperMesh : MonoBehaviour
 
 
         // + Y Face
-        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * ChunkScale.y+ -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + Up * ChunkScale.y+ -ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (right * SleeperLength + Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
-        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * ChunkScale.y+ ForwardVector * ChunkScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * SleeperScale.y+ -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + Up * SleeperScale.y+ -ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (right * SleeperLength + Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
+        m_Vertices.Add(RefPos + (-right * SleeperLength + Up * SleeperScale.y+ ForwardVector * SleeperScale.x));
         m_Tris.Add(RefTri + 20);
         m_Tris.Add(RefTri + 23);
         m_Tris.Add(RefTri + 21);
@@ -162,7 +177,7 @@ public class SleeperMesh : MonoBehaviour
             Handles.matrix = transform.localToWorldMatrix;
             Handles.color = Color.red;
             float Length = m_SplineContainer.CalculateLength();
-            float TotalSteps = (int)(Length * (ChunkScale.x + SleeperOffset));
+            float TotalSteps = (int)(Length * (SleeperScale.x + SleeperOffset));
             float Step = 1 / TotalSteps;
 
             for (int i = 0; i < TotalSteps; i++)
