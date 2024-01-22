@@ -13,8 +13,9 @@ public class SleeperMesh : MonoBehaviour
     [SerializeField] float SleeperLength;
 
     [SerializeField] float SleeperOffset;
-    
 
+    public float TotalSteps;
+    private float Length;
 
     [SerializeField]private SplineContainer m_SplineContainer;
     private int m_Index;
@@ -30,13 +31,17 @@ public class SleeperMesh : MonoBehaviour
     private float3 Tangent;
     private float3 UpVector;
 
-    public void Init(SplineContainer Spline, int SplineIndex, float Offset, Vector2 Scale)
+    public void Init(SplineContainer Spline, int SplineIndex, float Offset,float Width, Vector2 Scale)
     {
         m_SplineContainer = Spline;
         m_Index = SplineIndex;
         SleeperOffset = Offset;
+        SleeperLength = Width;
         SleeperScale = new Vector2(Scale.x, Scale.y * -1) / 10;
 
+        Length = m_SplineContainer.CalculateLength();
+        TotalSteps = (int)(Length * (SleeperScale.x + SleeperOffset));
+        
         m_Filter = GetComponent<MeshFilter>();
         m_Mesh = new Mesh { name = "Track Mesh" };
         GenMesh();
@@ -69,8 +74,6 @@ public class SleeperMesh : MonoBehaviour
         m_Vertices = new List<Vector3>();
         m_Tris = new List<int>();
 
-        float Length = m_SplineContainer.CalculateLength();
-        float TotalSteps = (int)(Length * (SleeperScale.x+SleeperOffset));
         float Step = 1 / TotalSteps;
 
         for (int i = 0; i < TotalSteps; i++)

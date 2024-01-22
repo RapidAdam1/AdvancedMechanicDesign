@@ -25,17 +25,19 @@ public class Pillars : MonoBehaviour
     RaycastHit HitResult;
     RaycastHit TempHitResult;
 
-    [SerializeField] int m_Resolution;
-    [SerializeField] protected float m_Offset;
-    [SerializeField] protected Vector2 m_Scale = Vector2.one;
-    [SerializeField] float MinPillarHeight = 0.5f;
+    int m_Resolution;
+    protected float m_Offset;
+    protected Vector2 m_Scale = Vector2.one;
+    float PillarHeight = 0.5f;
 
-    public void Init(SplineContainer Spline, int SplineIndex, float Offset, Vector2 Scale)
+    public void Init(SplineContainer Spline, int SplineIndex, float Offset,int PillarRes,float MinPillarHeight, Vector2 Scale)
     {
         m_SplineContainer = Spline;
         m_Index = SplineIndex;
         m_Scale = Scale;
-
+        m_Offset = Offset;
+        m_Resolution = PillarRes;
+        PillarHeight = MinPillarHeight;
         m_Filter = GetComponent<MeshFilter>();
         m_Mesh = new Mesh { name = "Track Mesh" };
         GenerateMesh();
@@ -80,7 +82,7 @@ public class Pillars : MonoBehaviour
             {
                 if(HitResult.collider.tag == "Ground")
                 {
-                    if (HitResult.distance > MinPillarHeight)
+                    if (HitResult.distance > PillarHeight)
                     {
                         Vector3 Point1 = (Vector3)Position + (Vector3.Normalize(right) * m_Offset);
                         Vector3 Point2 = (Vector3)Position+ (Vector3.Normalize(right) * -m_Offset);

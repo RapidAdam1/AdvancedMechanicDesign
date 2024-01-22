@@ -32,8 +32,8 @@ public class Track : MonoBehaviour
         if(!m_SplineContainer)
             return;
         
-        Sleepers.Init(m_SplineContainer, m_Index, SleeperDistance, m_SleeperScale);
-        //Pillars.Init(m_SplineContainer,m_Index,SleeperDistance,PillarScale);
+        Sleepers.Init(m_SplineContainer, m_Index, SleeperDistance,m_Offset, m_SleeperScale);
+        Pillars.Init(m_SplineContainer,m_Index,m_Offset,(int)Sleepers.TotalSteps,MinPillarHeight,PillarScale);
         OuterTrack.Init(m_SplineContainer, m_Index,Resolution, +m_Offset, m_RailScale);
         InnerTrack.Init(m_SplineContainer, m_Index, Resolution,-m_Offset, m_RailScale);
     }
@@ -45,7 +45,8 @@ public class Track : MonoBehaviour
         if (!m_SplineContainer)
             return;
 
-        Sleepers.Init(m_SplineContainer, m_Index, SleeperDistance, m_SleeperScale);
+        Sleepers.Init(m_SplineContainer, m_Index, SleeperDistance,m_Offset, m_SleeperScale);
+        Pillars.Init(m_SplineContainer, m_Index, m_Offset, (int)Sleepers.TotalSteps, MinPillarHeight, PillarScale);
         OuterTrack.Init(m_SplineContainer, m_Index, Resolution, +m_Offset, m_RailScale);
         InnerTrack.Init(m_SplineContainer, m_Index, Resolution, -m_Offset, m_RailScale);
     }
