@@ -25,7 +25,10 @@ public class Turret : MonoBehaviour
 
 	public void SetRotationDirty()
 	{
-		
+		Vector3 ProjectedVector = Vector3.ProjectOnPlane(transform.position,transform.forward);
+
+		Quaternion DesiredRotation = Quaternion.LookRotation(ProjectedVector, Vector3.up);
+
 	}
 
 	private IEnumerator C_AimTurret()

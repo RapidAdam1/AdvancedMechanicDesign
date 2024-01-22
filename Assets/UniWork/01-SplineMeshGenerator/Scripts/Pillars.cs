@@ -105,7 +105,7 @@ public class Pillars : MonoBehaviour
     {
         Ray FloorCheckRay = new Ray(RefPos, Vector3.down);
         Physics.Raycast(FloorCheckRay, out TempHitResult);
-        float FloorDistance = TempHitResult.distance;
+        float FloorDistance = TempHitResult.distance + 0.2f;
         
         // - Z Face
         m_Vertices.Add(RefPos + new Vector3(-m_Scale.x,0, -m_Scale.y));

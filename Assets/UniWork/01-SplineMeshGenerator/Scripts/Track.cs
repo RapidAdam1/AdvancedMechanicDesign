@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Splines;
 using UnityEngine;
+using UnityEditor;
 
 public class Track : MonoBehaviour
 {
@@ -50,4 +51,32 @@ public class Track : MonoBehaviour
         OuterTrack.Init(m_SplineContainer, m_Index, Resolution, +m_Offset, m_RailScale);
         InnerTrack.Init(m_SplineContainer, m_Index, Resolution, -m_Offset, m_RailScale);
     }
+}
+
+
+[CustomEditor(typeof(Track)), CanEditMultipleObjects]
+public class TrackEditor : Editor
+{
+    private void OnSceneGUI()
+    {
+        Track CurrentTrack = (Track)target;
+
+        //Button To Draw a completely new spline
+
+
+        //Label to signify sharp points that may be dodgy
+        var Colour = new Color(1, 0, 0, 1);
+        GUI.color = Colour;
+        Handles.Label(CurrentTrack.transform.position, "This is a Label Handle");
+        
+        /*        EditorGUI.BeginChangeCheck();
+                if (EditorGUI.EndChangeCheck())
+                {
+
+                }
+        */
+
+        //Drag Tool for X
+    }
+
 }
