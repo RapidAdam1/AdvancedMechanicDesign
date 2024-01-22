@@ -23,7 +23,7 @@ public class Pillars : MonoBehaviour
     private float3 UpVector;
    
     RaycastHit HitResult;
-
+    RaycastHit TempHitResult;
 
     [SerializeField] int m_Resolution;
     [SerializeField] protected float m_Offset;
@@ -85,8 +85,8 @@ public class Pillars : MonoBehaviour
                         Vector3 Point1 = (Vector3)Position + (Vector3.Normalize(right) * m_Offset);
                         Vector3 Point2 = (Vector3)Position+ (Vector3.Normalize(right) * -m_Offset);
 
-                        GenCube(Point1, m_Vertices.Count, HitResult.distance);
-                        GenCube(Point2 ,m_Vertices.Count, HitResult.distance);
+                        GenCube(Point1, m_Vertices.Count);
+                        GenCube(Point2 ,m_Vertices.Count);
                     }
                 }
             }
@@ -99,11 +99,15 @@ public class Pillars : MonoBehaviour
         m_Mesh.RecalculateNormals();
     }
 
-    private void GenCube(Vector3 RefPos, int RefTri,float FloorDistance)
+    private void GenCube(Vector3 RefPos, int RefTri)
     {
+        Ray FloorCheckRay = new Ray(RefPos, Vector3.down);
+        Physics.Raycast(FloorCheckRay, out TempHitResult);
+        float FloorDistance = TempHitResult.distance;
+        
         // - Z Face
-        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, FloorDistance, -m_Scale.y));
-        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, FloorDistance, -m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x,0, -m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(m_Scale.x,0, -m_Scale.y));
         m_Vertices.Add(RefPos + new Vector3(m_Scale.x, -FloorDistance, -m_Scale.y));
         m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, -FloorDistance, -m_Scale.y));
         m_Tris.Add(RefTri + 0);
@@ -114,8 +118,8 @@ public class Pillars : MonoBehaviour
         m_Tris.Add(RefTri + 3);
 
         // + y Face
-        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, FloorDistance, m_Scale.y));
-        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, FloorDistance, m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, 0, m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, 0, m_Scale.y));
         m_Vertices.Add(RefPos + new Vector3(m_Scale.x, -FloorDistance, m_Scale.y));
         m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, -FloorDistance, m_Scale.y));
         m_Tris.Add(RefTri + 4);
@@ -126,8 +130,8 @@ public class Pillars : MonoBehaviour
         m_Tris.Add(RefTri + 6);
 
         // - X Face
-        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, FloorDistance, m_Scale.y));
-        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, FloorDistance, -m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, 0, m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, 0, -m_Scale.y));
         m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, -FloorDistance, -m_Scale.y));
         m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, -FloorDistance, m_Scale.y));
         m_Tris.Add(RefTri + 8);
@@ -138,8 +142,8 @@ public class Pillars : MonoBehaviour
         m_Tris.Add(RefTri + 11);
 
         // + X Face
-        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, FloorDistance, m_Scale.y));
-        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, FloorDistance, -m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, 0, m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, 0, -m_Scale.y));
         m_Vertices.Add(RefPos + new Vector3(m_Scale.x, -FloorDistance, -m_Scale.y));
         m_Vertices.Add(RefPos + new Vector3(m_Scale.x, -FloorDistance, m_Scale.y));
         m_Tris.Add(RefTri + 12);
@@ -163,10 +167,10 @@ public class Pillars : MonoBehaviour
 
 
         // + Y Face
-        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, FloorDistance, -m_Scale.y));
-        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, FloorDistance, -m_Scale.y));
-        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, FloorDistance, m_Scale.y));
-        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, FloorDistance, m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, 0, -m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, 0, -m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(m_Scale.x, 0, m_Scale.y));
+        m_Vertices.Add(RefPos + new Vector3(-m_Scale.x, 0, m_Scale.y));
         m_Tris.Add(RefTri + 20);
         m_Tris.Add(RefTri + 23);
         m_Tris.Add(RefTri + 21);
