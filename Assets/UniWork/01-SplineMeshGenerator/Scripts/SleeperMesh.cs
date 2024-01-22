@@ -172,21 +172,21 @@ public class SleeperMesh : MonoBehaviour
     }
 
 
-      private void OnDrawGizmos()
+/*    private void OnDrawGizmos()
+    {
+        Handles.matrix = transform.localToWorldMatrix;
+        Handles.color = Color.red;
+        float Length = m_SplineContainer.CalculateLength();
+        float TotalSteps = (int)(Length * (SleeperScale.x + SleeperOffset));
+        float Step = 1 / TotalSteps;
+
+        for (int i = 0; i < TotalSteps; i++)
         {
-            Handles.matrix = transform.localToWorldMatrix;
-            Handles.color = Color.red;
-            float Length = m_SplineContainer.CalculateLength();
-            float TotalSteps = (int)(Length * (SleeperScale.x + SleeperOffset));
-            float Step = 1 / TotalSteps;
-
-            for (int i = 0; i < TotalSteps; i++)
-            {
-                float t = i * Step;
-                m_SplineContainer.Evaluate(m_Index, t, out Position, out Tangent, out UpVector);
-                Vector3 Point1 = Position;
-                Handles.SphereHandleCap(0, Point1, Quaternion.identity, 0.1f, EventType.Repaint);
-            }
-
+            float t = i * Step;
+            m_SplineContainer.Evaluate(m_Index, t, out Position, out Tangent, out UpVector);
+            Vector3 Point1 = Position;
+            Handles.SphereHandleCap(0, Point1, Quaternion.identity, 0.1f, EventType.Repaint);
         }
+
+    }*/
 }

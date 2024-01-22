@@ -85,6 +85,7 @@ public class SplineMesh : MonoBehaviour
         Vector3 Up = (Vector3)UpVector;
         Right.Normalize();
         Up.Normalize();
+
         m_Verts.Add(SegmentPos + (-Right * m_Scale.x + Up * m_Scale.y)); //TR 0
         m_Verts.Add(SegmentPos + (Right * m_Scale.x + Up * m_Scale.y)); //TL 1
         m_Verts.Add(SegmentPos + (Right * m_Scale.x + -Up * m_Scale.y)); //BL 2

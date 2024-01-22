@@ -250,6 +250,9 @@ MonoBehaviour:
   Sleepers: {fileID: 3910517121478106359}
   SleeperDistance: 0.36
   m_SleeperScale: {x: 3.13, y: 2.43}
+  Pillars: {fileID: 0}
+  MinPillarHeight: 1
+  PillarScale: {x: 1, y: 1}
 --- !u!114 &4556144504137913748
 MonoBehaviour:
   m_ObjectHideFlags: 0
