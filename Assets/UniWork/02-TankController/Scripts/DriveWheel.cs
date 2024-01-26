@@ -16,12 +16,12 @@ public class DriveWheel : MonoBehaviour
 	private float m_Acceleration;
 	public void SetAcceleration(float amount)
 	{
-		
+		m_Acceleration = amount;
 	}
 
 	public void Init(TankSO inData)
 	{
-		
+		m_Data = inData;
 	}
 
 	private void Handle_WheelGroundedChanged(bool newGrounded)
@@ -31,6 +31,6 @@ public class DriveWheel : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		
+		m_RB?.AddForceAtPosition(m_RB.transform.position, m_RB.transform.forward * /*Traction */ m_Acceleration, ForceMode.Acceleration);
 	}
 }
