@@ -22,11 +22,19 @@ public class DriveWheel : MonoBehaviour
 	public void Init(TankSO inData)
 	{
 		m_Data = inData;
+		foreach(Suspension Spring in m_SuspensionWheels)
+		{
+			Spring.Init(m_Data.SuspensionData);
+			Spring.OnGroundedChanged += Handle_WheelGroundedChanged;
+		}
 	}
 
 	private void Handle_WheelGroundedChanged(bool newGrounded)
 	{
-		
+		if (newGrounded)
+			m_NumGroundedWheels += 1;
+		else
+			m_NumGroundedWheels -= 1;
 	}
 
 	private void FixedUpdate()
