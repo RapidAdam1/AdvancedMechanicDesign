@@ -16,23 +16,49 @@ public class Turret : MonoBehaviour
 
 	private void Awake()
 	{
+		
 	}
 
 	public void Init(TankSO inData)
 	{
 		m_Data = inData;
+		m_RotationDirty = true;
 	}
 
 	public void SetRotationDirty()
 	{
-		Vector3 ProjectedVector = Vector3.ProjectOnPlane(transform.position,transform.forward);
-
-		Quaternion DesiredRotation = Quaternion.LookRotation(ProjectedVector, Vector3.up);
-
+		if(m_RotationDirty)
+		{
+			if(m_CRAimingTurret == null)
+			{
+				m_CRAimingTurret = StartCoroutine(C_AimTurret());
+			}
+		}
+		else
+		{
+			if(m_CRAimingTurret != null)
+			{
+				StopCoroutine(m_CRAimingTurret);
+				m_CRAimingTurret = null;
+			}
+		}
+		
 	}
 
 	private IEnumerator C_AimTurret()
 	{
-		yield return null;
+		while (m_RotationDirty)
+		{
+			//Aim Turret Bulk
+            Vector3 TurretProjection = Vector3.ProjectOnPlane(m_CameraMount.forward,m_Turret.up);
+			Quaternion TurretTargetRot = Quaternion.LookRotation(TurretProjection, m_Turret.up);
+			m_Turret.rotation = Quaternion.RotateTowards(m_Turret.rotation,TurretTargetRot,m_Data.TurretData.TurretTraverseSpeed * Time.deltaTime);
+
+
+			Debug.Log(m_Turret.forward);
+            yield return new WaitForFixedUpdate();
+			
+		}
+		yield break;
 	}
 }
