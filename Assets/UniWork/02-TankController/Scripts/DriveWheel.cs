@@ -39,7 +39,7 @@ public class DriveWheel : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		return;
-		m_RB?.AddForceAtPosition(m_RB.transform.position, m_RB.transform.forward * m_NumGroundedWheels * m_Acceleration, ForceMode.Acceleration);
+		m_NumGroundedWheels = 3;
+		m_RB?.AddForceAtPosition(m_RB.transform.position, m_RB.transform.forward * (m_SuspensionWheels.Length/ m_NumGroundedWheels) * m_Acceleration, ForceMode.Acceleration);
 	}
 }

@@ -79,16 +79,4 @@ public class Turret : MonoBehaviour
 		}
 		yield break;
 	}
-
-    private void OnDrawGizmos()
-    {
-        Vector3 TurretProjection = Vector3.ProjectOnPlane(m_CameraMount.forward, m_Turret.up);
-        Quaternion TurretTargetRot = Quaternion.LookRotation(TurretProjection, m_Turret.up);
-
-		Gizmos.color = Color.white;
-		Gizmos.DrawLine(m_CameraMount.transform.position,TurretProjection);
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(m_Turret.transform.position, TurretTargetRot.ToEulerAngles());
-
-    }
 }

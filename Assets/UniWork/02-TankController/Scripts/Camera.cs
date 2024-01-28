@@ -30,12 +30,13 @@ public class CameraController : MonoBehaviour
 
 	public void ChangeCameraDistance(float amount)
 	{
-		m_CameraDist = Mathf.Clamp(m_CameraDist+amount,m_MinDist,m_MaxDist);
-		Debug.Log(m_CameraDist);
+		m_CameraDist = Mathf.Clamp(m_CameraDist + amount*m_ZoomSensitivity, m_MinDist, m_MaxDist);
+		m_CameraMount.localPosition = new Vector3(m_CameraMount.localPosition.x, m_CameraMount.localPosition.y, -m_CameraDist);
 	}
+
 
 	private void LateUpdate()
 	{
-
+		
 	}
 }
