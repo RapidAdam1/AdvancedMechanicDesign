@@ -14,6 +14,8 @@ public class Turret : MonoBehaviour
 	private bool m_RotationDirty;
 	private Coroutine m_CRAimingTurret;
 
+	[SerializeField] float Pitch;
+
 	private void Awake()
 	{
 		
@@ -54,11 +56,39 @@ public class Turret : MonoBehaviour
 			Quaternion TurretTargetRot = Quaternion.LookRotation(TurretProjection, m_Turret.up);
 			m_Turret.rotation = Quaternion.RotateTowards(m_Turret.rotation,TurretTargetRot,m_Data.TurretData.TurretTraverseSpeed * Time.deltaTime);
 
+			Vector3 BarrelProjection = Vector3.ProjectOnPlane(m_CameraMount.forward,m_Turret.right);
+            BarrelProjection.x = 0;
+			Vector3 BarrelTargetRot;
 
-			Debug.Log(m_Turret.forward);
+			if(BarrelProjection.y >= 0)
+			{
+				BarrelTargetRot = Vector3.RotateTowards(Vector3.forward, BarrelProjection, Mathf.Deg2Rad * m_Data.TurretData.ElevationLimit, float.MaxValue);
+			}
+			else
+			{
+                BarrelTargetRot = Vector3.RotateTowards(Vector3.forward, BarrelProjection, Mathf.Deg2Rad * m_Data.TurretData.DepressionLimit, float.MaxValue);
+
+            }
+			Quaternion TargetRot = Quaternion.LookRotation(BarrelTargetRot);
+            m_Barrel.localRotation = Quaternion.RotateTowards(m_Barrel.localRotation,TargetRot,m_Data.TurretData.BarrelTraverseSpeed* Time.deltaTime);
+		
+
+            Debug.Log(m_Turret.forward);
             yield return new WaitForFixedUpdate();
 			
 		}
 		yield break;
 	}
+
+    private void OnDrawGizmos()
+    {
+        Vector3 TurretProjection = Vector3.ProjectOnPlane(m_CameraMount.forward, m_Turret.up);
+        Quaternion TurretTargetRot = Quaternion.LookRotation(TurretProjection, m_Turret.up);
+
+		Gizmos.color = Color.white;
+		Gizmos.DrawLine(m_CameraMount.transform.position,TurretProjection);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(m_Turret.transform.position, TurretTargetRot.ToEulerAngles());
+
+    }
 }
