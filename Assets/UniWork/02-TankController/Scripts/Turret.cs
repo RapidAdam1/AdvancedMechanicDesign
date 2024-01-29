@@ -1,3 +1,4 @@
+using PlasticGui.WebApi.Responses;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -13,8 +14,7 @@ public class Turret : MonoBehaviour
 	private TankSO m_Data;
 	private bool m_RotationDirty;
 	private Coroutine m_CRAimingTurret;
-
-	[SerializeField] float Pitch;
+	[SerializeField] [Range(100,-100)]float Pitch;
 
 	private void Awake()
 	{
@@ -51,29 +51,24 @@ public class Turret : MonoBehaviour
 	{
 		while (m_RotationDirty)
 		{
-			//Aim Turret Bulk
+			//Aim Turret
             Vector3 TurretProjection = Vector3.ProjectOnPlane(m_CameraMount.forward,m_Turret.up);
 			Quaternion TurretTargetRot = Quaternion.LookRotation(TurretProjection, m_Turret.up);
 			m_Turret.rotation = Quaternion.RotateTowards(m_Turret.rotation,TurretTargetRot,m_Data.TurretData.TurretTraverseSpeed * Time.deltaTime);
 
-			Vector3 BarrelProjection = Vector3.ProjectOnPlane(m_CameraMount.forward,m_Turret.right);
-            BarrelProjection.x = 0;
-			Vector3 BarrelTargetRot;
+			
+			
+            //Aim Barrel
 
-			if(BarrelProjection.y >= 0)
-			{
-				BarrelTargetRot = Vector3.RotateTowards(Vector3.forward, BarrelProjection, Mathf.Deg2Rad * m_Data.TurretData.ElevationLimit, float.MaxValue);
-			}
-			else
-			{
-                BarrelTargetRot = Vector3.RotateTowards(Vector3.forward, BarrelProjection, Mathf.Deg2Rad * m_Data.TurretData.DepressionLimit, float.MaxValue);
+            Vector3 BarrelProjection = m_Turret.InverseTransformVector(Vector3.ProjectOnPlane(m_CameraMount.forward, m_Turret.right).normalized);
 
-            }
-			Quaternion TargetRot = Quaternion.LookRotation(BarrelTargetRot);
-            m_Barrel.localRotation = Quaternion.RotateTowards(m_Barrel.localRotation,TargetRot,m_Data.TurretData.BarrelTraverseSpeed* Time.deltaTime);
-		
+			float targetPitch = Mathf.Atan(BarrelProjection.y / BarrelProjection.z) * Mathf.Rad2Deg;
+			targetPitch = targetPitch.Remap180();
 
-            Debug.Log(m_Turret.forward);
+			Debug.DrawRay(m_Barrel.transform.position,BarrelProjection);
+            //Get Pitch Value
+            Quaternion NewLocalRoation = Quaternion.Euler(targetPitch, 0,0);
+			m_Barrel.localRotation = Quaternion.RotateTowards(m_Barrel.localRotation, NewLocalRoation, m_Data.TurretData.BarrelTraverseSpeed * Time.deltaTime);
             yield return new WaitForFixedUpdate();
 			
 		}

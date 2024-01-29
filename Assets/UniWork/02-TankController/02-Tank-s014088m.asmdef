@@ -2,7 +2,8 @@
     "name": "02-Tank-s014088m",
     "rootNamespace": "",
     "references": [
-        "GUID:75469ad4d38634e559750d17036d5f7c"
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:787f1bc95a35bb54cb286c992a1011b6"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

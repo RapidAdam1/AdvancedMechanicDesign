@@ -12,14 +12,12 @@ public class Suspension : MonoBehaviour
 	[SerializeField] private Rigidbody m_RB;
 
 	private SuspensionSO m_Data;
-	[SerializeField] private float m_SpringSize;
+	private float m_SpringSize;
 	private bool m_Grounded;
 
 	public void Init(SuspensionSO inData)
 	{
 		m_Data = inData;
-		Debug.Log(m_Data.WheelDiameter);
-
     }
 
 	public bool GetGrounded()
@@ -40,15 +38,15 @@ public class Suspension : MonoBehaviour
 		}
 		if(m_Grounded)
 		{
-			Vector3 LocalDir = transform.TransformDirection(Vector3.down);
+			Vector3 LocalDown = transform.TransformDirection(Vector3.down);
 			Vector3 WorldVelocity = m_RB.GetPointVelocity(transform.position);
 			Vector3 SpringVector = transform.position - transform.parent.position;
 
-			float SuspensionOffset = m_SpringSize - Vector3.Dot(SpringVector, LocalDir);
-			float SuspensionVelocity = Vector3.Dot(LocalDir, WorldVelocity);
+			float SuspensionOffset = m_SpringSize - Vector3.Dot(SpringVector, LocalDown);
+			float SuspensionVelocity = Vector3.Dot(LocalDown, WorldVelocity);
 			float SuspensionForce = (SuspensionOffset * m_Data.SuspensionStrength) - (SuspensionVelocity * m_Data.SuspensionDamper);
 
-			m_RB.AddForce(LocalDir * (SuspensionForce / m_RB.mass));
+			m_RB.AddForce(LocalDown * (SuspensionForce / m_RB.mass));
 			
 		}
 
