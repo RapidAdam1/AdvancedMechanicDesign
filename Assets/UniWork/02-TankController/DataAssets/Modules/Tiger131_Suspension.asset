@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 565894c2efdd59d40ab93ebc095fa1d8, type: 3}
   m_Name: Tiger131_Suspension
   m_EditorClassIdentifier: 
-  WheelDiameter: 0.35
-  SuspensionDamper: 4
-  SuspensionStrength: 31.75
+  WheelDiameter: 0.7
+  SuspensionDamper: 2
+  SuspensionStrength: 17
   SuspensionLayermask:
     serializedVersion: 2
     m_Bits: 1

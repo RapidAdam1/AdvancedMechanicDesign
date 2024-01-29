@@ -14,26 +14,24 @@ public class Suspension : MonoBehaviour
 	private SuspensionSO m_Data;
 	private float m_SpringSize;
 	private bool m_Grounded;
-
 	public void Init(SuspensionSO inData)
 	{
 		m_Data = inData;
+		m_SpringSize = Mathf.Abs(m_Wheel.localPosition.y) + m_Data.WheelDiameter/2f;
     }
 
 	public bool GetGrounded()
 	{
-		if (Physics.Raycast(m_Wheel.transform.position, -m_Wheel.transform.up, m_Data.WheelDiameter,  m_Data.SuspensionLayermask))
-		{
-			return true;
-		}
-		return false;
+		return m_Grounded;
 	}
 
 	private void FixedUpdate()
 	{
-        if (GetGrounded()!= m_Grounded) 
+		
+		bool NewGrounded = Physics.Raycast(transform.position, -transform.up, out RaycastHit HitInfo, m_SpringSize, m_Data.SuspensionLayermask);
+        if (NewGrounded != m_Grounded) 
 		{
-			m_Grounded = !m_Grounded;
+			m_Grounded = NewGrounded;
 			OnGroundedChanged?.Invoke(m_Grounded);
 		}
 		if(m_Grounded)
@@ -42,12 +40,12 @@ public class Suspension : MonoBehaviour
 			Vector3 WorldVelocity = m_RB.GetPointVelocity(transform.position);
 			Vector3 SpringVector = transform.position - transform.parent.position;
 
-			float SuspensionOffset = m_SpringSize - Vector3.Dot(SpringVector, LocalDown);
-			float SuspensionVelocity = Vector3.Dot(LocalDown, WorldVelocity);
+			float SuspensionOffset = m_SpringSize -HitInfo.distance;
+			float SuspensionVelocity = Vector3.Dot(-LocalDown, WorldVelocity);
 			float SuspensionForce = (SuspensionOffset * m_Data.SuspensionStrength) - (SuspensionVelocity * m_Data.SuspensionDamper);
 
-			m_RB.AddForce(LocalDown * (SuspensionForce / m_RB.mass),ForceMode.Acceleration);
-			
+			m_RB.AddForceAtPosition(-LocalDown * (SuspensionForce),transform.position,ForceMode.Acceleration);
+			Debug.Log(SuspensionForce);
 		}
 
 	}
@@ -56,7 +54,7 @@ public class Suspension : MonoBehaviour
     {
         if (m_Data!=null)
         {
-			Gizmos.DrawRay(m_Wheel.transform.position, -m_Wheel.transform.up * m_Data.WheelDiameter);
+			Gizmos.DrawRay(transform.position, -transform.up *m_SpringSize);
         }
     }
 }
