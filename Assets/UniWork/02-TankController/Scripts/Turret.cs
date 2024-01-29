@@ -62,12 +62,12 @@ public class Turret : MonoBehaviour
 
             Vector3 BarrelProjection = m_Turret.InverseTransformVector(Vector3.ProjectOnPlane(m_CameraMount.forward, m_Turret.right).normalized);
 
+			//Get Pitch Value
 			float targetPitch = Mathf.Atan(BarrelProjection.y / BarrelProjection.z) * Mathf.Rad2Deg;
-			targetPitch = targetPitch.Remap180();
-
-			Debug.DrawRay(m_Barrel.transform.position,BarrelProjection);
-            //Get Pitch Value
-            Quaternion NewLocalRoation = Quaternion.Euler(targetPitch, 0,0);
+            targetPitch = Mathf.Clamp(targetPitch.Remap180(),-m_Data.TurretData.DepressionLimit,m_Data.TurretData.ElevationLimit);
+			targetPitch *= -1;
+            
+			Quaternion NewLocalRoation = Quaternion.Euler(targetPitch, 0,0);
 			m_Barrel.localRotation = Quaternion.RotateTowards(m_Barrel.localRotation, NewLocalRoation, m_Data.TurretData.BarrelTraverseSpeed * Time.deltaTime);
             yield return new WaitForFixedUpdate();
 			

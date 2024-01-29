@@ -46,7 +46,7 @@ public class Suspension : MonoBehaviour
 			float SuspensionVelocity = Vector3.Dot(LocalDown, WorldVelocity);
 			float SuspensionForce = (SuspensionOffset * m_Data.SuspensionStrength) - (SuspensionVelocity * m_Data.SuspensionDamper);
 
-			m_RB.AddForce(LocalDown * (SuspensionForce / m_RB.mass));
+			m_RB.AddForce(LocalDown * (SuspensionForce / m_RB.mass),ForceMode.Acceleration);
 			
 		}
 
