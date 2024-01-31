@@ -110,8 +110,37 @@ public class TankController : MonoBehaviour
 	{
 		while (m_IsSteering)
 		{
+            if (m_InAccelerate == 0) //Stationary WORKS DONT DELETE
+			{
+                m_DriveWheels[0].SetAcceleration(m_InSteer);
+                m_DriveWheels[1].SetAcceleration(m_InSteer * -1);
+            }
+			else
+			{
 
-			yield return null;
+				float Dir = (m_InAccelerate * 0.5f);
+
+				/*
+				 *FORWARD = 0.5
+				 *REVERSE = -0.5f
+				 */
+				// FORWARD RIGHT
+				// R = DIR L = m_InAccelerate
+				// L = DIR R = m_InAccelerate
+
+				if(m_InSteer == 1) 
+				{
+                    m_DriveWheels[0].SetAcceleration(m_InAccelerate);
+                    m_DriveWheels[1].SetAcceleration(Dir);
+                }
+				else if(m_InSteer == -1)
+				{
+                    m_DriveWheels[0].SetAcceleration(Dir);
+                    m_DriveWheels[1].SetAcceleration(m_InAccelerate);
+
+                }
+            }		
+            yield return null;
 		}
 	}
 

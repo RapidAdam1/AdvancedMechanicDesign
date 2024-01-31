@@ -3291,7 +3291,7 @@ GameObject:
   - component: {fileID: 1566191698}
   - component: {fileID: 1566191699}
   m_Layer: 0
-  m_Name: DriveWheel
+  m_Name: DriveWheelL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3452,7 +3452,7 @@ GameObject:
   - component: {fileID: 1692009105}
   - component: {fileID: 1692009106}
   m_Layer: 0
-  m_Name: DriveWheel
+  m_Name: DriveWheelR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
