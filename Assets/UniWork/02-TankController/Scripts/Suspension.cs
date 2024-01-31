@@ -38,7 +38,6 @@ public class Suspension : MonoBehaviour
 		{
 			Vector3 LocalDown = transform.TransformDirection(Vector3.down);
 			Vector3 WorldVelocity = m_RB.GetPointVelocity(transform.position);
-			Vector3 SpringVector = transform.position - transform.parent.position;
 
 			float SuspensionOffset = m_SpringSize -HitInfo.distance;
 			float SuspensionVelocity = Vector3.Dot(-LocalDown, WorldVelocity);
@@ -46,6 +45,8 @@ public class Suspension : MonoBehaviour
 
 			m_RB.AddForceAtPosition(-LocalDown * (SuspensionForce),transform.position,ForceMode.Acceleration);
 			Debug.Log(SuspensionForce);
+
+			m_Wheel.localPosition = new Vector3(0, m_Data.WheelDiameter / 2f - HitInfo.distance, 0);
 		}
 
 	}
