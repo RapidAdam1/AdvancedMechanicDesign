@@ -17,6 +17,7 @@ public class DriveWheel : MonoBehaviour
 	public void SetAcceleration(float amount)
 	{
 		m_Acceleration = amount;
+		Debug.Log(amount);
 	}
 
 	public void Init(TankSO inData)
@@ -43,11 +44,12 @@ public class DriveWheel : MonoBehaviour
 			return;
 
 		Vector3 AveragePos = Vector3.zero;
-		for (int i = 0; i < m_SuspensionWheels.Length-1; i++)
+		for (int i = 0; i < m_SuspensionWheels.Length; i++)
 		{
-			AveragePos += transform.position;
+			
 		}
-		AveragePos/= m_SuspensionWheels.Length;
-		//m_RB?.AddForceAtPosition(AveragePos, transform.forward * (m_SuspensionWheels.Length / m_NumGroundedWheels) * m_Acceleration, ForceMode.Acceleration);
+		AveragePos = AveragePos / m_SuspensionWheels.Length;
+		float Traction = m_SuspensionWheels.Length / m_NumGroundedWheels;
+		m_RB?.AddForceAtPosition(AveragePos*m_Acceleration, transform.forward * m_Acceleration * Traction, ForceMode.Acceleration);
 	}
 }
