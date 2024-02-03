@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class Barrel : MonoBehaviour
@@ -8,8 +9,10 @@ public class Barrel : MonoBehaviour
 	[SerializeField] private Shell m_ShellPrefab;
 	[SerializeField] private ShellSO[] m_AmmoTypes;
 	[SerializeField] private int[] m_AmmoCounts;
-	private int m_SelectedShell;
 
+	[SerializeField] Transform FireTransform;
+
+	private int m_SelectedShell;
 	private float m_CurrentDispersion;
 
 	public void Init(TankSO inData)
@@ -19,7 +22,8 @@ public class Barrel : MonoBehaviour
 
 	public void Fire()
 	{
-
+		Instantiate(m_ShellPrefab, FireTransform.position, FireTransform.rotation);
+		m_ShellPrefab.Init(m_Data.ShellData, FireTransform.forward);
 	}
 
 }

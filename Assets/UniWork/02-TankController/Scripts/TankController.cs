@@ -14,10 +14,7 @@ public class TankController : MonoBehaviour
 	[SerializeField] private CameraController m_CameraController;
 	[SerializeField] private Turret m_TurretController;
 	[SerializeField] private DriveWheel[] m_DriveWheels;
-	private int m_NumSuspensionsGrounded;
-
 	private float m_InAccelerate;
-
 	private float m_InSteer;
 	private bool m_IsSteering;
 	private Coroutine m_CRSteer;
@@ -25,22 +22,20 @@ public class TankController : MonoBehaviour
 	private bool m_IsFiring;
 	private Coroutine m_CRFire;
 
-	private void Awake()
+    #region Init
+    private void Awake()
 	{
 		m_ActionMap = new AM_02Tank();
 		m_RB = GetComponent<Rigidbody>();
 		m_CameraController = GetComponent<CameraController>();
 		m_TurretController = GetComponent<Turret>();
-		m_NumSuspensionsGrounded = 0;
 		foreach (DriveWheel wheel in m_DriveWheels)
 		{
 			wheel.Init(m_Data);
-			wheel.OnGroundedChanged += Handle_SuspensionGroundedChanged;
 		}
 		m_TurretController.Init(m_Data);
 	}
-
-	private void OnEnable()
+    private void OnEnable()
 	{
 		m_ActionMap.Enable();
 
@@ -66,8 +61,10 @@ public class TankController : MonoBehaviour
 		m_ActionMap.Default.Aim.performed -= Handle_AimPerformed;
 		m_ActionMap.Default.Zoom.performed -= Handle_ZoomPerformed;
 	}
+    #endregion
 
-	private void Handle_AcceleratePerformed(InputAction.CallbackContext context)
+    #region Input Handling
+    private void Handle_AcceleratePerformed(InputAction.CallbackContext context)
 	{
 		m_InAccelerate = context.ReadValue<float>();
 		foreach (DriveWheel wheel in m_DriveWheels)
@@ -85,7 +82,6 @@ public class TankController : MonoBehaviour
 		}
 		m_TurretController.SetRotationDirty();
 	}
-
 	private void Handle_SteerPerformed(InputAction.CallbackContext context)
 	{
 		m_InSteer = context.ReadValue<float>();
@@ -109,7 +105,35 @@ public class TankController : MonoBehaviour
 		}
 		StopCoroutine(m_CRSteer);
 	}
-	private IEnumerator C_SteerUpdate()
+    private void Handle_FirePerformed(InputAction.CallbackContext context)
+    {
+        if (m_IsFiring) return;
+
+        m_IsFiring = true;
+
+        m_CRFire = StartCoroutine(C_FireUpdate());
+    }
+    private void Handle_FireCanceled(InputAction.CallbackContext context)
+    {
+        if (!m_IsFiring) return;
+
+        m_IsFiring = false;
+
+        StopCoroutine(m_CRFire);
+    }
+    private void Handle_AimPerformed(InputAction.CallbackContext context)
+    {
+        m_CameraController.RotateSpringArm(context.ReadValue<Vector2>());
+        m_TurretController.SetRotationDirty();
+    }
+    private void Handle_ZoomPerformed(InputAction.CallbackContext context)
+    {
+        m_CameraController.ChangeCameraDistance(context.ReadValue<float>());
+        m_TurretController.SetRotationDirty();
+    }
+    #endregion
+
+    private IEnumerator C_SteerUpdate()
 	{
 		while (m_IsSteering)
 		{
@@ -148,44 +172,19 @@ public class TankController : MonoBehaviour
 		
 	}
 
-	private void Handle_FirePerformed(InputAction.CallbackContext context)
-	{
-		if (m_IsFiring) return;
 
-		m_IsFiring = true;
-
-		m_CRFire = StartCoroutine(C_FireUpdate());
-	}
-	private void Handle_FireCanceled(InputAction.CallbackContext context)
-	{
-		if (!m_IsFiring) return;
-
-		m_IsFiring = false;
-
-		StopCoroutine(m_CRFire);
-	}
 	private IEnumerator C_FireUpdate()
 	{
+		bool CanFire = true;
 		while (m_IsFiring)
 		{
+			if (CanFire)
+			{
+				m_TurretController.CallFire();
+			}
 			yield return null;
 		}
 	}
 
-	private void Handle_AimPerformed(InputAction.CallbackContext context)
-	{
-		m_CameraController.RotateSpringArm(context.ReadValue<Vector2>());
-		m_TurretController.SetRotationDirty();
-	}
 
-	private void Handle_ZoomPerformed(InputAction.CallbackContext context)
-	{
-		m_CameraController.ChangeCameraDistance(context.ReadValue<float>());
-		m_TurretController.SetRotationDirty();
-	}
-
-	private void Handle_SuspensionGroundedChanged(bool newGrounded)
-	{
-
-	}
 }

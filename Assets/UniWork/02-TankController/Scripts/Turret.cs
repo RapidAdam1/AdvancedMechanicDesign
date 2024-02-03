@@ -11,20 +11,22 @@ public class Turret : MonoBehaviour
 	[SerializeField] private Transform m_Turret;
 	[SerializeField] private Transform m_Barrel;
 
+	[SerializeField] private Barrel m_BarrelScript;
+	
 	private TankSO m_Data;
 	private bool m_RotationDirty;
 	private Coroutine m_CRAimingTurret;
-	[SerializeField] [Range(100,-100)]float Pitch;
-
-	private void Awake()
-	{
-		
-	}
 
 	public void Init(TankSO inData)
 	{
 		m_Data = inData;
+		m_BarrelScript.Init(inData);
 		m_RotationDirty = true;
+	}
+
+	public void CallFire()
+	{
+		m_BarrelScript.Fire();
 	}
 
 	public void SetRotationDirty()
@@ -46,7 +48,6 @@ public class Turret : MonoBehaviour
 		}
 		
 	}
-
 	private IEnumerator C_AimTurret()
 	{
 		while (m_RotationDirty)
