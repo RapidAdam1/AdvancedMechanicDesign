@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WheelDiameter: 0.7
   SuspensionDamper: 2
-  SuspensionStrength: 17
+  SuspensionStrength: 16
   SuspensionLayermask:
     serializedVersion: 2
     m_Bits: 1

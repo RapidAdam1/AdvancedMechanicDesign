@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Tiger131_Engine
   m_EditorClassIdentifier: 
   HorsePower: 50
+  RotatePivotOffset: 0.2

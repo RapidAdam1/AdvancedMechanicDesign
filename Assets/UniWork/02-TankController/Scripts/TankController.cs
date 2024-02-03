@@ -103,14 +103,17 @@ public class TankController : MonoBehaviour
 		if (!m_IsSteering) return;
 
 		m_IsSteering = false;
-
+		foreach (DriveWheel wheel in m_DriveWheels)
+		{
+			wheel.SetAcceleration(m_InAccelerate);
+		}
 		StopCoroutine(m_CRSteer);
 	}
 	private IEnumerator C_SteerUpdate()
 	{
 		while (m_IsSteering)
 		{
-           /* if (m_InAccelerate == 0) //Stationary WORKS DONT DELETE
+			if (m_InAccelerate == 0) //Stationary WORKS DONT DELETE
 			{
                 m_DriveWheels[0].SetAcceleration(m_InSteer);
                 m_DriveWheels[1].SetAcceleration(m_InSteer * -1);
@@ -118,15 +121,15 @@ public class TankController : MonoBehaviour
 			else
 			{
 
-				float Dir = (m_InAccelerate * 0.5f);
+				float Dir = (m_InAccelerate * m_Data.EngineData.RotatePivotOffset);
 
-				*//*
-				 *FORWARD = 0.5
-				 *REVERSE = -0.5f
-				 *//*
+		/*		//*
+				FORWARD = 0.5
+				REVERSE = -0.5f
+				//*
 				// FORWARD RIGHT
 				// R = DIR L = m_InAccelerate
-				// L = DIR R = m_InAccelerate
+				// L = DIR R = m_InAccelerate*/
 
 				if(m_InSteer == 1) 
 				{
@@ -139,7 +142,7 @@ public class TankController : MonoBehaviour
                     m_DriveWheels[1].SetAcceleration(m_InAccelerate);
 
                 }
-            }	*/	
+            }
             yield return null;
 		}
 		

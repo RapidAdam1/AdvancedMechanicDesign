@@ -37,6 +37,6 @@ public class CameraController : MonoBehaviour
 
 	private void LateUpdate()
 	{
-		
+		m_SpringArmTarget.transform.position = Vector3.MoveTowards(m_SpringArmTarget.transform.position, this.transform.position, 1f);
 	}
 }

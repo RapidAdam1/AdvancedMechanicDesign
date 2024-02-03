@@ -13,11 +13,13 @@ public class DriveWheel : MonoBehaviour
 	private int m_NumGroundedWheels;
 	private bool m_Grounded;
 
-	private float m_Acceleration;
+	Vector3 GV_DrivePos;
+	Vector3 GV_DriveForce;
+
+    private float m_Acceleration;
 	public void SetAcceleration(float amount)
 	{
 		m_Acceleration = amount;
-		Debug.Log(amount);
 	}
 
 	public void Init(TankSO inData)
@@ -41,15 +43,36 @@ public class DriveWheel : MonoBehaviour
 	private void FixedUpdate()
 	{
 		if (m_NumGroundedWheels == 0 || m_Acceleration == 0)
+		{
+			//TODO - Delete After Testing 
+			GV_DriveForce = Vector3.zero;
+			GV_DrivePos = Vector3.zero;
 			return;
+		}
 
-		Vector3 AveragePos = Vector3.zero;
+		Vector3 DriveForcePos = Vector3.zero;
+		Vector3 DriveForce = Vector3.zero;
 		for (int i = 0; i < m_SuspensionWheels.Length; i++)
 		{
-			
+			if (!m_SuspensionWheels[i].GetGrounded())
+				continue;
+            DriveForcePos += m_SuspensionWheels[i].transform.position;
 		}
-		AveragePos = AveragePos / m_SuspensionWheels.Length;
-		float Traction = m_SuspensionWheels.Length / m_NumGroundedWheels;
-		m_RB?.AddForceAtPosition(AveragePos*m_Acceleration, transform.forward * m_Acceleration * Traction, ForceMode.Acceleration);
+
+        float Traction = m_SuspensionWheels.Length / m_NumGroundedWheels;
+		
+		DriveForcePos = DriveForcePos / m_NumGroundedWheels;
+		DriveForce = m_RB.transform.forward * (m_Acceleration * Traction);
+		m_RB?.AddForceAtPosition(DriveForce, DriveForcePos ,ForceMode.Acceleration);
+
+        //TODO - Delete After Testing 
+        GV_DriveForce = DriveForce;
+		GV_DrivePos = DriveForcePos;
 	}
+    private void OnDrawGizmos()
+    {
+		Gizmos.DrawSphere(GV_DrivePos, 0.4f);
+		Gizmos.color = Color.red;
+		Gizmos.DrawLine(GV_DrivePos, GV_DriveForce);
+    }
 }
