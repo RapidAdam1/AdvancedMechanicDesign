@@ -44,8 +44,8 @@ public class Suspension : MonoBehaviour
 			float SuspensionForce = (SuspensionOffset * m_Data.SuspensionStrength) - (SuspensionVelocity * m_Data.SuspensionDamper);
 
 			m_RB.AddForceAtPosition(-LocalDown * (SuspensionForce),transform.position,ForceMode.Acceleration);
-
 			m_Wheel.localPosition = new Vector3(0, m_Data.WheelDiameter / 2f - HitInfo.distance, 0);
+
 		}
 
 	}

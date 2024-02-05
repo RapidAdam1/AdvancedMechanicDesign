@@ -42,8 +42,16 @@ public class DriveWheel : MonoBehaviour
 
 	private void FixedUpdate()
 	{
+
+		//Anti-Steer
+
+		//Do Some Trig to calculate the sideways force
+		//Apply a force for antisteer in the Opposite Direction
+
 		if (m_NumGroundedWheels == 0 || m_Acceleration == 0)
+		{
 			return;
+		}
 		Vector3 DriveForcePos = Vector3.zero;
 		Vector3 DriveForce = Vector3.zero;
 		for (int i = 0; i < m_SuspensionWheels.Length; i++)
@@ -51,13 +59,17 @@ public class DriveWheel : MonoBehaviour
 			if (!m_SuspensionWheels[i].GetGrounded())
 				continue;
             DriveForcePos += m_SuspensionWheels[i].transform.position;
+			Vector3 AntiSteerDirection = m_RB.velocity.normalized*-1;
+			//m_RB?.AddForceAtPosition((Mathf.Cos(GroundAngle) / m_NumGroundedWheels), m_SuspensionWheels[i].transform.position, ForceMode.Acceleration);
 		}
 
+		//Drive Forces
         float Traction = m_SuspensionWheels.Length / m_NumGroundedWheels;
-		
+		float TankAcceleration = m_Acceleration * m_Data.EngineData.HorsePower / (m_RB.mass / 1000);
 		DriveForcePos = DriveForcePos / m_NumGroundedWheels;
 		DriveForce = m_RB.transform.forward * (m_Acceleration * Traction);
 		m_RB?.AddForceAtPosition(DriveForce, DriveForcePos ,ForceMode.Acceleration);
+
 
         //TODO - Delete After Testing 
         GV_DriveForce = DriveForce;
