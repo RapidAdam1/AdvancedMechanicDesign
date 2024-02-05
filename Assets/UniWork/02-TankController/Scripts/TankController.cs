@@ -181,6 +181,7 @@ public class TankController : MonoBehaviour
 			if (CanFire)
 			{
 				m_TurretController.CallFire();
+				yield return new WaitForSeconds(m_Data.BarrelData.ReloadTime);
 			}
 			yield return null;
 		}
