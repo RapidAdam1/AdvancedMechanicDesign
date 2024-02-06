@@ -60,20 +60,18 @@ public class DriveWheel : MonoBehaviour
             DriveForcePos += m_SuspensionWheels[i].transform.position;
 		}
 
-		float TankAcceleration = (m_Data.EngineData.HorsePower / (m_RB.mass/1000)); //Direction * HP/ (Mass(Tons) * velocity)
-        float Traction = m_SuspensionWheels.Length / m_NumGroundedWheels;
-		
-		Debug.Log(TankAcceleration);
+		float TankAcceleration = m_Data.EngineData.HorsePower / (m_RB.mass / 1000); //Acceleration = (HP/ (Weight(Tons) * velocity)) - Friction
 
+        float Traction = m_NumGroundedWheels/m_SuspensionWheels.Length ;
 		DriveForcePos = DriveForcePos / m_NumGroundedWheels;
-		DriveForce = m_RB.transform.forward*m_Acceleration * (TankAcceleration * Traction);
+		DriveForce = (m_RB.transform.forward * m_Acceleration) * TankAcceleration * Traction;
 		m_RB?.AddForceAtPosition(DriveForce, DriveForcePos ,ForceMode.Acceleration);
-
-        //TODO - Delete After Testing 
+        
+		
+		//TODO - Delete After Testing 
         GV_DriveForce = DriveForce;
 		GV_DrivePos = DriveForcePos;
 	}
-
 	private void OnDrawGizmos()
     {
 		Gizmos.DrawSphere(GV_DrivePos, 0.4f);

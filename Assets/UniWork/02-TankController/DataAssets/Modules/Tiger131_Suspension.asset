@@ -18,5 +18,5 @@ MonoBehaviour:
   SuspensionLayermask:
     serializedVersion: 2
     m_Bits: 1
-  MaximumSlope: 44
-  HullTraverseDegrees: 0
+  MaximumSlope: 56
+  FrictionCoefficient: 0.252

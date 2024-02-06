@@ -6,9 +6,9 @@ using UnityEngine;
 public class SuspensionSO : ScriptableObject
 {
 	public float WheelDiameter; 
-	public float SuspensionDamper; //Damper Strength (Speed the suspension averages
-	public float SuspensionStrength; //Force to apply Up Per X???
+	public float SuspensionDamper; 
+	public float SuspensionStrength;
 	public LayerMask SuspensionLayermask;
 	public float MaximumSlope;
-	public float HullTraverseDegrees;
+	[Range (0.05f,1f)] public float FrictionCoefficient;
 }
