@@ -67,6 +67,10 @@ public class DriveWheel : MonoBehaviour
 		DriveForce = (m_RB.transform.forward * m_Acceleration) * TankAcceleration * Traction;
 		m_RB?.AddForceAtPosition(DriveForce, DriveForcePos ,ForceMode.Acceleration);
         
+		if(m_RB.velocity.magnitude > 24f)
+		{
+			m_RB.velocity = m_RB.velocity.normalized * 24 ;
+		}
 		
 		//TODO - Delete After Testing 
         GV_DriveForce = DriveForce;
