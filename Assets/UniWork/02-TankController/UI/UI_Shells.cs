@@ -6,13 +6,13 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class UI_Shells : MonoBehaviour
 {
-
+    [SerializeField]TankController controller;
     Image ShellImage;
 
     private void Awake()
     {
         ShellImage = GetComponent<Image>();
-
+        controller.OnReloadChange += OnShellUpdated;
     }
 
     void OnShellUpdated(bool ShellState)

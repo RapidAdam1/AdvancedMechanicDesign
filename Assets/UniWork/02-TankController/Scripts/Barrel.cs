@@ -7,12 +7,8 @@ public class Barrel : MonoBehaviour
 {
 	[SerializeField] private TankSO m_Data;
 	[SerializeField] private Shell m_ShellPrefab;
-	[SerializeField] private ShellSO[] m_AmmoTypes;
-	[SerializeField] private int[] m_AmmoCounts;
-
 	[SerializeField] Transform FireTransform;
-
-	private int m_SelectedShell;
+	[SerializeField] Rigidbody m_RB;
 	private float m_CurrentDispersion;
 
 	public void Init(TankSO inData)
@@ -22,8 +18,19 @@ public class Barrel : MonoBehaviour
 
 	public void Fire()
 	{
-		Instantiate(m_ShellPrefab, FireTransform.position, FireTransform.rotation);
-		m_ShellPrefab.Init(m_Data.ShellData, FireTransform.forward);
+		Vector3 FireDir = FireTransform.forward;
+		if (m_RB.velocity.magnitude > 0.5f)
+        {
+			m_CurrentDispersion = m_RB.velocity.magnitude;
+			m_CurrentDispersion /= 100;
+			FireDir += new Vector3(Random.Range(-m_CurrentDispersion, m_CurrentDispersion),Random.Range(-m_CurrentDispersion,m_CurrentDispersion));
+		}
+			
+
+
+
+		Shell NewShell = Instantiate(m_ShellPrefab, FireTransform.position, FireTransform.rotation);
+		NewShell.Init(m_Data.ShellData, FireDir);
 	}
 
 }

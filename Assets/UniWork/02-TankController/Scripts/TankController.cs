@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -169,20 +170,34 @@ public class TankController : MonoBehaviour
 		
 	}
 
-
+	bool CanFire = true;
+	public event Action<bool> OnReloadChange;
 	private IEnumerator C_FireUpdate()
 	{
-		bool CanFire = true;
 		while (m_IsFiring)
 		{
 			if (CanFire)
 			{
 				m_TurretController.CallFire();
-				yield return new WaitForSeconds(m_Data.BarrelData.ReloadTime);
+				StartCoroutine(C_Reload());
 			}
 			yield return null;
 		}
+		yield break;
 	}
+	
+	private IEnumerator C_Reload()
+    {
+		CanFire = false;
+		OnReloadChange?.Invoke(CanFire);
 
+		yield return new WaitForSeconds(m_Data.BarrelData.ReloadTime);
+
+		CanFire = true;
+		OnReloadChange?.Invoke(CanFire);
+
+		yield break;
+
+	}
 
 }

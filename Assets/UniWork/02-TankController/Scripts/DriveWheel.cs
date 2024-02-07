@@ -53,19 +53,20 @@ public class DriveWheel : MonoBehaviour
 		}
 		for (int i = 0; i < m_SuspensionWheels.Length; i++)
 		{
+			m_SuspensionWheels[i].AnimateWheels(m_Acceleration);
 			if (!m_SuspensionWheels[i].GetGrounded())
 				continue;
-
-			m_SuspensionWheels[i].AnimateWheels(m_Acceleration);
             DriveForcePos += m_SuspensionWheels[i].transform.position;
 		}
 
 		float TankAcceleration = m_Data.EngineData.HorsePower / (m_RB.mass / 1000); //Acceleration = (HP/ (Weight(Tons) * velocity)) - Friction
 
         float Traction = m_NumGroundedWheels/m_SuspensionWheels.Length ;
+
 		DriveForcePos = DriveForcePos / m_NumGroundedWheels;
-		DriveForce = (m_RB.transform.forward * m_Acceleration) * TankAcceleration * Traction;
-		m_RB?.AddForceAtPosition(DriveForce, DriveForcePos ,ForceMode.Acceleration);
+		DriveForce = ((m_RB.transform.forward * m_Acceleration) * TankAcceleration) * Traction;
+
+		m_RB?.AddForceAtPosition(DriveForce,DriveForcePos ,ForceMode.Acceleration);
         
 		if(m_RB.velocity.magnitude > 24f)
 		{
