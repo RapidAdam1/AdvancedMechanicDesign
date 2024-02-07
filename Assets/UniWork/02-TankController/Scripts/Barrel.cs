@@ -25,10 +25,6 @@ public class Barrel : MonoBehaviour
 			m_CurrentDispersion /= 100;
 			FireDir += new Vector3(Random.Range(-m_CurrentDispersion, m_CurrentDispersion),Random.Range(-m_CurrentDispersion,m_CurrentDispersion));
 		}
-			
-
-
-
 		Shell NewShell = Instantiate(m_ShellPrefab, FireTransform.position, FireTransform.rotation);
 		NewShell.Init(m_Data.ShellData, FireDir);
 	}

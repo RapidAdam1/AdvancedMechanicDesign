@@ -18,12 +18,18 @@ public class CameraController : MonoBehaviour
 	[SerializeField] private float m_ZoomSensitivity;
 
 	[SerializeField] private float m_CameraProbeSize; 
-	[SerializeField] private Vector3 m_TargetOffset; 
+	[SerializeField] private Vector3 m_TargetOffset;
+	Vector3 CameraOffset;
 
-	public void RotateSpringArm(Vector2 change)
+    private void Awake()
+    {
+		CameraOffset = m_CameraMount.localPosition;
+    }
+    public void RotateSpringArm(Vector2 change)
 	{
 		m_TargetOffset.x += change.x * m_YawSensitivity;
 		m_TargetOffset.y -= change.y * m_PitchSensitivity;
+		//m_TargetOffset.y = Mathf.Clamp(m_TargetOffset.y, -m_MaxYAngle, m_MaxYAngle);
 
 		m_SpringArmTarget.transform.rotation = Quaternion.Euler(m_TargetOffset.y, m_TargetOffset.x, 0);
 	}
@@ -31,12 +37,27 @@ public class CameraController : MonoBehaviour
 	public void ChangeCameraDistance(float amount)
 	{
 		m_CameraDist = Mathf.Clamp(m_CameraDist + amount*m_ZoomSensitivity, m_MinDist, m_MaxDist);
-		m_CameraMount.localPosition = new Vector3(m_CameraMount.localPosition.x, m_CameraMount.localPosition.y, -m_CameraDist);
 	}
 
 
 	private void LateUpdate()
 	{
+		float CameraDistance;
+		Vector3 RayStart = m_SpringArmTarget.position + CameraOffset;
+		Vector3 Direction = m_CameraMount.transform.position - RayStart;
+
+		bool IsCollidingWithGround = Physics.Raycast(RayStart,Direction, out RaycastHit HitInfo, m_CameraDist);
+        if (IsCollidingWithGround)
+        {
+			CameraDistance = HitInfo.distance;
+        }
+        else
+        {
+			CameraDistance = m_CameraDist;
+        }
+		m_CameraMount.localPosition = new Vector3(CameraOffset.x, CameraOffset.y, -CameraDistance);
+
 		m_SpringArmTarget.transform.position = Vector3.MoveTowards(m_SpringArmTarget.transform.position, this.transform.position, 1f);
 	}
+
 }
