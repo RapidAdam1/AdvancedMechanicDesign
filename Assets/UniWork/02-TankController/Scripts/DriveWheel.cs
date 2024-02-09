@@ -34,10 +34,7 @@ public class DriveWheel : MonoBehaviour
 
 	private void Handle_WheelGroundedChanged(bool newGrounded)
 	{
-		if (newGrounded)
-			m_NumGroundedWheels += 1;
-		else
-			m_NumGroundedWheels -= 1;
+		m_NumGroundedWheels += newGrounded?1:-1;
 	}
 
 	private void FixedUpdate()
@@ -61,7 +58,7 @@ public class DriveWheel : MonoBehaviour
 
 		float TankAcceleration = m_Data.EngineData.HorsePower / (m_RB.mass / 1000); //Acceleration = (HP/ (Weight(Tons) * velocity)) - Friction
 
-        float Traction = m_NumGroundedWheels/m_SuspensionWheels.Length ;
+        float Traction = (float)m_NumGroundedWheels/(float)m_SuspensionWheels.Length ;
 
 		DriveForcePos = DriveForcePos / m_NumGroundedWheels;
 		DriveForce = ((m_RB.transform.forward * m_Acceleration) * TankAcceleration) * Traction;
