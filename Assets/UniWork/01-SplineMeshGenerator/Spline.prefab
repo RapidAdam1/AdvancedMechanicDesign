@@ -338,17 +338,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00bc56875e2b1744da281419eae19c47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Offset: 1
+  m_TrackWidth: 0
   Resolution: 123
   m_SplineContainer: {fileID: 4556144504137913748}
-  m_Index: 0
   m_RailScale: {x: 0.1, y: 0.1}
   OuterTrack: {fileID: 3410922418678645319}
   InnerTrack: {fileID: 600973367516650814}
   Sleepers: {fileID: 3910517121478106359}
-  SleeperDistance: 0.36
-  m_SleeperScale: {x: 3.49, y: 0.74}
   Pillars: {fileID: 7802845961587937814}
+  SleeperOffset: 0
+  m_SleeperScale: {x: 3.49, y: 0.74}
   MinPillarHeight: -4.43
   PillarScale: {x: 0.25, y: 0.25}
 --- !u!114 &4556144504137913748
@@ -1460,7 +1459,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SleeperScale: {x: 0.349, y: -0.074}
-  SleeperLength: 1
-  SleeperOffset: 0.36
-  TotalSteps: 199
+  SleeperLength: 0
+  SleeperOffset: 0
+  TotalSteps: 98
   m_SplineContainer: {fileID: 4556144504137913748}

@@ -24,7 +24,7 @@ public class Track : MonoBehaviour
     [SerializeField] Vector2 m_RailScale = new Vector2(.1f,.1f);
     [SerializeField] SplineMesh OuterTrack;
     [SerializeField] SplineMesh InnerTrack;
-    [SerializeField] SleeperMesh Sleepers;
+    [SerializeField] public SleeperMesh Sleepers;
     [SerializeField] Pillars Pillars;
 
 
@@ -59,19 +59,13 @@ public class Track : MonoBehaviour
 [CustomEditor(typeof(Track)), CanEditMultipleObjects]
 public class TrackEditor : Editor
 {
+
     private void OnSceneGUI()
     {
         Track CurrentTrack = (Track)target;
 
+
         //Button To Draw a completely new spline
-
-
-        //Label to signify sharp points that may be dodgy
-        var Colour = new Color(1, 0, 0, 1);
-        GUI.color = Colour;
-        Handles.Label(CurrentTrack.transform.position, "This is a Label Handle");
-        
-        
         EditorGUI.BeginChangeCheck();
         //Vector3 newCellOffset = Handles.PositionHandle(CurrentTrack.transform.position + CurrentTrack.transform.TransformVector(CurrentTrack.CellOffset), CurrentTrack.transform.rotation);
         if (EditorGUI.EndChangeCheck())
@@ -81,5 +75,16 @@ public class TrackEditor : Editor
             //CurrentTrack.OnValidate();
 
         }
+
+        //Label to Show how many Sleepers
+        var Colour = Color.green;
+        GUI.color = Colour;
+        if (CurrentTrack.Sleepers.TotalSteps != 0)
+        {
+            Handles.Label(CurrentTrack.transform.position, "Sleeper Count: " + CurrentTrack.Sleepers.TotalSteps.ToString());
+        }
+        
+        
+
     }
 }
