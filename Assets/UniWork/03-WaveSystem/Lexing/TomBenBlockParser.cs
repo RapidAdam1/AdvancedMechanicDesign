@@ -65,10 +65,10 @@ public class TomBenBlockParser : MonoBehaviour
         charIndex = 0;
         charBuffer = "";
         state = ParserState.OutsideBlock;
-
         //Read All the File
         fileContent =  File.ReadAllText(filepath);
 
+        Debug.Log(fileContent);
         while (!ReachedEnd())
         {
             switch (state)
@@ -76,11 +76,12 @@ public class TomBenBlockParser : MonoBehaviour
                 case ParserState.OutsideBlock:
                     ParseOutsideBlock();
                     break;
-                case ParserState.InsideBlockBody:
-                    ParseInsideBlock();
-                    break;
                 case ParserState.InsideBlockHeader:
                     ParseInsideBlockHeader();
+                    break;
+                case ParserState.InsideBlockBody:
+                    ParseInsideBlock();
+                    blocks.Add(currentBlock);
                     break;
             }
         }
@@ -101,29 +102,31 @@ public class TomBenBlockParser : MonoBehaviour
 
         ChangeState(ParserState.InsideBlockHeader);
     }
-    private void ParseInsideBlock()
+    private void ParseInsideBlockHeader()
     {
-        while (!BufferHasAny("cluster", "type", "wave") && !ReachedEnd())
+        //Find Integer & Name
+        while (!BufferHasAny(" ") && !ReachedEnd())
             NextChar();
 
         if (ReachedEnd())
             return;
-
-        currentBlock.type = GetLastMatchedBlockType();
+        currentBlock.id = 9;
+        currentBlock.name = "This is a Name";
 
         ChangeState(ParserState.InsideBlockBody);
     }
-    private void ParseInsideBlockHeader()
+    private void ParseInsideBlock()
     {
-        while (!BufferHasAny("cluster", "type", "wave") && !ReachedEnd())
+        //Read All Data between _Tom & _Ben
+        while (!BufferHasAny(" ") && !ReachedEnd())
             NextChar();
 
         if (ReachedEnd())
             return;
 
-        currentBlock.type = GetLastMatchedBlockType();
+        currentBlock.content = "This is Content";
 
-        ChangeState(ParserState.InsideBlockBody);
+        ChangeState(ParserState.OutsideBlock);
     }
     private string GetLastMatchedBlockType()
     {
