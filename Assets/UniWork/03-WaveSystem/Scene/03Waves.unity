@@ -582,6 +582,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0730dfa2ce4803e4abd6cb76125a5eee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  regexPattern: 
-  InputFile: 
-  blocks: []
+  InputFile: Assets/UniWork/03-WaveSystem/TestFiles/AMD_03_Simple_E.TomBen

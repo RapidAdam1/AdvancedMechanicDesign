@@ -1,49 +1,36 @@
 using UnityEngine;
-using System.Text.RegularExpressions;
 using System.IO;
 using System.Collections.Generic;
 
 public class TomBenBlockParser : MonoBehaviour
 {
-    [SerializeField] private string regexPattern;
-    /*    [SerializeField] private string InputText;
-
-        private void OnValidate()
-        {
-            Regex regex =  new Regex(regexPattern);
-            Match regexMatch = regex.Match(InputText);
-            if (regexMatch.Success)
-            {
-                Debug.Log($"Matched Text {regexMatch.Groups[0]}");
-                for(int i = 1; i < regexMatch.Groups.Count; i++)
-                {
-                    Debug.Log($"Capture Group {i} = {regexMatch.Groups[i]}");
-                }
-            }
-        }*/
-
     [SerializeField]
     private string InputFile;
 
+    //Current Block Parsing & List of Already Parsed Blocks
     private ParsedBlock currentBlock = new ParsedBlock();
     public List<ParsedBlock> blocks = new List<ParsedBlock>();
-
+    
+    //Parser States
     private enum ParserState
     {
         InsideBlockBody, InsideBlockHeader, OutsideBlock
     }
 
+    //Default To Outside Block
     private ParserState state = ParserState.OutsideBlock;
 
+    //Temp Buffer for Parsing
     private string charBuffer = "";
     private int charIndex = 0;
 
+    //File to Parse
     private string fileContent = "";
     private void Awake()
     {
         if (!File.Exists(InputFile))
             throw new UnityException("Cant Open File");
-        return;
+
         TomBenBlockParser blockParser = new TomBenBlockParser();
         blocks = blockParser.ParseFromFile(InputFile);
     }
@@ -61,27 +48,25 @@ public class TomBenBlockParser : MonoBehaviour
         ClearBuffer();
     }
 
-    private bool BufferHas(string token ) => charBuffer.EndsWith( token );
+    private bool BufferHas(string token ) => charBuffer.EndsWith(token);
     private bool BufferHasAny(params string[] tokens)
     {
         foreach (var token in tokens)
         {
-
-            if (BufferHas(token))
-            { 
-
+            if (BufferHas(token)) 
                 return true;
-            }
         }
         return false;
     }
 
     public List<ParsedBlock> ParseFromFile(string filepath)
     {
+        //Reset State
         charIndex = 0;
         charBuffer = "";
         state = ParserState.OutsideBlock;
 
+        //Read All the File
         fileContent =  File.ReadAllText(filepath);
 
         while (!ReachedEnd())
@@ -92,10 +77,10 @@ public class TomBenBlockParser : MonoBehaviour
                     ParseOutsideBlock();
                     break;
                 case ParserState.InsideBlockBody:
-                    //ParseInsideBlock();
+                    ParseInsideBlock();
                     break;
                 case ParserState.InsideBlockHeader:
-                    //ParseInsideBlockHeader();
+                    ParseInsideBlockHeader();
                     break;
             }
         }
@@ -104,9 +89,23 @@ public class TomBenBlockParser : MonoBehaviour
 
     private void ParseOutsideBlock()
     {
+        //Look for Keywords
         while(!BufferHasAny("cluster","type","wave") && !ReachedEnd())
             NextChar();
         
+        //End Of File? Stop Parsing
+        if (ReachedEnd())
+            return;
+
+        currentBlock.type = GetLastMatchedBlockType();
+
+        ChangeState(ParserState.InsideBlockHeader);
+    }
+    private void ParseInsideBlock()
+    {
+        while (!BufferHasAny("cluster", "type", "wave") && !ReachedEnd())
+            NextChar();
+
         if (ReachedEnd())
             return;
 
@@ -114,7 +113,18 @@ public class TomBenBlockParser : MonoBehaviour
 
         ChangeState(ParserState.InsideBlockBody);
     }
+    private void ParseInsideBlockHeader()
+    {
+        while (!BufferHasAny("cluster", "type", "wave") && !ReachedEnd())
+            NextChar();
 
+        if (ReachedEnd())
+            return;
+
+        currentBlock.type = GetLastMatchedBlockType();
+
+        ChangeState(ParserState.InsideBlockBody);
+    }
     private string GetLastMatchedBlockType()
     {
         string lastMatched = null;
@@ -127,18 +137,4 @@ public class TomBenBlockParser : MonoBehaviour
     }
 
  
-}
-
-[System.Serializable]
-public struct ParsedBlock
-{
-    public string type;
-    public string name;
-    public string id;
-    public string content;
-
-    public override string ToString()
-    {
-        return $"ParsedBlock(type={type}, id={id}, name =={name}, content={content})";
-    }
 }
