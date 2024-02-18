@@ -140,8 +140,10 @@ public class TankController : MonoBehaviour
 		{
 			if (m_InAccelerate == 0) //Stationary WORKS DONT DELETE
 			{
-                m_DriveWheels[0].SetAcceleration(m_InSteer);
-            }
+                m_DriveWheels[0].SetAcceleration(m_InSteer/2);
+				m_DriveWheels[1].SetAcceleration(-m_InSteer/2);
+
+			}
 			else
 			{
 

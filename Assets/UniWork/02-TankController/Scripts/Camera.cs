@@ -20,7 +20,7 @@ public class CameraController : MonoBehaviour
 	[SerializeField] private float m_CameraProbeSize; 
 	[SerializeField] private Vector3 m_TargetOffset;
 	Vector3 CameraOffset;
-
+	[SerializeField] float MaxY = 50;
     private void Awake()
     {
 		CameraOffset = m_CameraMount.localPosition;
@@ -29,7 +29,8 @@ public class CameraController : MonoBehaviour
 	{
 		m_TargetOffset.x += change.x * m_YawSensitivity;
 		m_TargetOffset.y -= change.y * m_PitchSensitivity;
-		//m_TargetOffset.y = Mathf.Clamp(m_TargetOffset.y, -m_MaxYAngle, m_MaxYAngle);
+
+		m_TargetOffset.y = Mathf.Clamp(m_TargetOffset.y, -MaxY, MaxY);
 
 		m_SpringArmTarget.transform.rotation = Quaternion.Euler(m_TargetOffset.y, m_TargetOffset.x, 0);
 	}

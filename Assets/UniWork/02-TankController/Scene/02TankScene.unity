@@ -2668,6 +2668,7 @@ MonoBehaviour:
   m_ZoomSensitivity: 2.5
   m_CameraProbeSize: 0.5
   m_TargetOffset: {x: 0, y: 4, z: 0}
+  MaxY: 50
 --- !u!114 &928874461
 MonoBehaviour:
   m_ObjectHideFlags: 0
