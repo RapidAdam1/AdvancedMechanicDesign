@@ -1,5 +1,8 @@
+using Codice.Client.Common;
+using Codice.CM.Common;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class WaveData : MonoBehaviour
@@ -27,12 +30,7 @@ public class WaveData : MonoBehaviour
             }
         }
 
-
-        Debug.Log("Sorted Lists");
-        Debug.Log($"Waves:{Waves.Count}");
-        Debug.Log($"Clusters:{Clusters.Count}");
-        Debug.Log($"Types:{Types.Count}");
-
+        ReadCluster(Clusters[0]);
     }
 
     ParsedBlock GetBlockFromID(int ID, List<ParsedBlock> List)
@@ -43,6 +41,59 @@ public class WaveData : MonoBehaviour
                 return List[i];
         }
         Debug.LogError("NO FOUND ID");
-        return List[0];
+        return new ParsedBlock();
+    }
+
+    void SpawnType(ParsedBlock Type)
+    {
+        float Damage = 0;
+        float Speed = 0;
+        float Health = 0;
+
+        Regex RegexPattern = new Regex(@"(\w+)=>(\d*)");
+        MatchCollection RegexMatch = RegexPattern.Matches(Type.content);
+        for (int i = 0; i < RegexMatch.Count; i++)
+        {   
+            switch (RegexMatch[i].Groups[1].ToString())
+            {
+                case "health":
+                    Health = float.Parse(RegexMatch[i].Groups[2].ToString());
+                    break;
+                case "speed":
+                    Speed = float.Parse(RegexMatch[i].Groups[2].ToString());
+                    break;
+                case "damage":
+                    Health = float.Parse(RegexMatch[i].Groups[2].ToString());
+                    break;
+
+            }
+            Debug.Log($"Spawned type {Type.id}");
+        }
+
+    }
+
+    void ReadCluster(ParsedBlock Cluster)
+    {
+        Regex RegexPattern = new Regex(@"(\d*):(\d*)");
+        MatchCollection RegexMatch = RegexPattern.Matches(Cluster.content);
+        Debug.Log($"Cluster {Cluster.id}");
+        
+        for (int i = 0; i < RegexMatch.Count; i++)
+        {
+            int ReadID = int.Parse(RegexMatch[i].Groups[1].ToString());
+            int IDCount = int.Parse(RegexMatch[i].Groups[2].ToString());
+
+            Debug.Log($"Spawn ID:{ReadID} for {IDCount}");
+            for(int j = 0; j < IDCount; j++)
+            {
+                //GetTypeFromID
+                //SpawnID
+            }
+        }
+    }
+
+    void ReadWave(ParsedBlock Wave)
+    {
+
     }
 }
