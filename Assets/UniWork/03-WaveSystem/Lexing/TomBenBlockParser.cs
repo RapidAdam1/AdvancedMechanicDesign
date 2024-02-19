@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Codice.Client.Common.GameUI;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 public class TomBenBlockParser : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class TomBenBlockParser : MonoBehaviour
     //Temp Buffer for Parsing
     private string charBuffer = "";
     private int charIndex = 0;
-
+    bool IsDuplicate = false;
     //File to Parse
     private string fileContent = "";
     private void Awake()
@@ -83,7 +84,6 @@ public class TomBenBlockParser : MonoBehaviour
                     break;
                 case ParserState.InsideBlockBody:
                     ParseInsideBlock();
-                    blocks.Add(currentBlock);
                     break;
             }
         }
@@ -99,7 +99,7 @@ public class TomBenBlockParser : MonoBehaviour
         //End Of File? Stop Parsing
         if (ReachedEnd())
             return;
-
+        IsDuplicate = false;
         currentBlock.type = GetLastMatchedBlockType();
 
         ChangeState(ParserState.InsideBlockHeader);
@@ -109,14 +109,18 @@ public class TomBenBlockParser : MonoBehaviour
         //Read All Up to the _Tom
         while (!BufferHasAny("_Tom") && !ReachedEnd())
             NextChar();
-        if (ReachedEnd())
-            return;
 
         Regex RegexSearchID = new Regex(@"(\d)");
         Regex NameSearch = new Regex(@"(?:\((.*)\))");
-        currentBlock.id = int.Parse(RegExr.RegexReader(charBuffer,RegexSearchID));
-        currentBlock.name = RegExr.RegexReader(charBuffer,NameSearch);
 
+        int FoundID = int.Parse(RegExr.RegexReader(charBuffer, RegexSearchID));
+        string FoundName = RegExr.RegexReader(charBuffer, NameSearch);
+        
+        currentBlock.id = FoundID;
+        currentBlock.name = FoundName;
+
+        if (ReachedEnd())
+            return;
         ChangeState(ParserState.InsideBlockBody);
     }
     private void ParseInsideBlock()
@@ -125,11 +129,22 @@ public class TomBenBlockParser : MonoBehaviour
         while (!BufferHasAny("_Ben") && !ReachedEnd())
             NextChar();
 
+        Regex ContentSearch = new Regex(@"(?:\s(.*) _Ben)");
+        
+        string Content = RegExr.RegexReader(charBuffer,ContentSearch);
+        currentBlock.content = Content;
+
+        if (IsDuplicateBlock(currentBlock.type, currentBlock.id))
+        {
+            UpdateBlock(currentBlock.type, currentBlock.id, currentBlock.name,currentBlock.content);
+        }
+        else
+        {
+            blocks.Add(currentBlock);
+        }
+     
         if (ReachedEnd())
             return;
-        Regex ContentSearch = new Regex(@"(?: (.*)_Ben)");
-        currentBlock.content = RegExr.RegexReader(charBuffer,ContentSearch);
-
         ChangeState(ParserState.OutsideBlock);
     }
     private string GetLastMatchedBlockType()
@@ -143,15 +158,37 @@ public class TomBenBlockParser : MonoBehaviour
         return lastMatched;
     }
 
-    private string GetLastMatchedHeaderID()
+    void UpdateBlock(string type, int ID, string Name, string content) 
     {
-        string lastMatched = null;
-        return lastMatched;
+        //Get The Current Block
+        for (int i = 0; i<blocks.Count;i++)
+        {
+            if (blocks[i].id == ID && blocks[i].type == type)
+            {
+                ParsedBlock UpdateBlock = blocks[i];
+                blocks.Remove(blocks[i]);
+
+                if(Name.Length != 0)
+                    UpdateBlock.name = Name;
+                
+                UpdateBlock.content = content;
+                blocks.Add(UpdateBlock);
+                break;
+            }
+        }
+
+        return;
     }
-    private string GetLastMatchedHeaderName()
+
+    bool IsDuplicateBlock(string type, int ID)
     {
-        string lastMatched = null;
-        return lastMatched;
+        foreach (ParsedBlock block in blocks) 
+        {
+            if (block.id == ID && block.type == type)
+                return true;
+        }
+
+        return false;
     }
- 
+
 }
