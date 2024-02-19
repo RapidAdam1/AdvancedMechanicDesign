@@ -96,6 +96,7 @@ public class WaveData : MonoBehaviour
     {
         /// REGEX PATTERN =    [^!?]+(\w)+\[(\d)\]
         /// REGEX GET DATA BETWEEN INTERROBANGS = (?:[^!?]*)
+        /// REGEX GET TYPE/CLUSTER ID (?:[^!?]*(?:(\w)(\d)))
 
         Regex RegexPattern = new Regex(@"[^!?]+(\w)+\[(\d)\]");
     }
