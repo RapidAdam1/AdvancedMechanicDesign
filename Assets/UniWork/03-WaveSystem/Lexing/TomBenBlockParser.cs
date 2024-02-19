@@ -36,6 +36,9 @@ public class TomBenBlockParser : MonoBehaviour
 
         TomBenBlockParser blockParser = new TomBenBlockParser();
         blocks = blockParser.ParseFromFile(InputFile);
+
+        WaveData waveData = new WaveData();
+        waveData.SortToLists(blocks);
     }
 
     private void ClearBuffer() => charBuffer = "";
