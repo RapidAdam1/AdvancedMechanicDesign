@@ -127,7 +127,7 @@ public class TomBenBlockParser : MonoBehaviour
 
         if (ReachedEnd())
             return;
-        Regex ContentSearch = new Regex(@"");
+        Regex ContentSearch = new Regex(@"(?: (.*)_Ben)");
         currentBlock.content = RegExr.RegexReader(charBuffer,ContentSearch);
 
         ChangeState(ParserState.OutsideBlock);
