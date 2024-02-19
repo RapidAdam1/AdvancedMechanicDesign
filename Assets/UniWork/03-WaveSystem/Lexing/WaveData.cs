@@ -94,6 +94,9 @@ public class WaveData : MonoBehaviour
 
     void ReadWave(ParsedBlock Wave)
     {
+        /// REGEX PATTERN =    [^!?]+(\w)+\[(\d)\]
+        /// REGEX GET DATA BETWEEN INTERROBANGS = (?:[^!?]*)
 
+        Regex RegexPattern = new Regex(@"[^!?]+(\w)+\[(\d)\]");
     }
 }
