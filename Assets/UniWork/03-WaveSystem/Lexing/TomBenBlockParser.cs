@@ -111,10 +111,11 @@ public class TomBenBlockParser : MonoBehaviour
             NextChar();
         if (ReachedEnd())
             return;
+
         Regex RegexSearchID = new Regex(@"(\d)");
-        
+        Regex NameSearch = new Regex(@"(?:\((.*)\))");
         currentBlock.id = int.Parse(RegExr.RegexReader(charBuffer,RegexSearchID));
-        currentBlock.name = "This is a Name";
+        currentBlock.name = RegExr.RegexReader(charBuffer,NameSearch);
 
         ChangeState(ParserState.InsideBlockBody);
     }
@@ -126,8 +127,8 @@ public class TomBenBlockParser : MonoBehaviour
 
         if (ReachedEnd())
             return;
-
-        currentBlock.content = "This is Content";
+        Regex ContentSearch = new Regex(@"");
+        currentBlock.content = RegExr.RegexReader(charBuffer,ContentSearch);
 
         ChangeState(ParserState.OutsideBlock);
     }

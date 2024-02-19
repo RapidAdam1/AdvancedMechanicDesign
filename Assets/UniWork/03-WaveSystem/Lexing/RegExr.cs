@@ -17,7 +17,7 @@ public class RegExr
             {
                 Debug.Log(regexMatch.Groups[i]);
             }
-            return regexMatch.Groups[0].ToString();
+            return regexMatch.Groups[1].ToString();
         }
         return "";
     }
