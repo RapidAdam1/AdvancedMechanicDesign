@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Codice.Client.Common.GameUI;
 
 public class TomBenBlockParser : MonoBehaviour
 {
@@ -104,13 +106,14 @@ public class TomBenBlockParser : MonoBehaviour
     }
     private void ParseInsideBlockHeader()
     {
-        //Find Integer & Name
-        while (!BufferHasAny(" ") && !ReachedEnd())
+        //Read All Up to the _Tom
+        while (!BufferHasAny("_Tom") && !ReachedEnd())
             NextChar();
-
         if (ReachedEnd())
             return;
-        currentBlock.id = 9;
+        Regex RegexSearchID = new Regex(@"(\d)");
+        
+        currentBlock.id = int.Parse(RegExr.RegexReader(charBuffer,RegexSearchID));
         currentBlock.name = "This is a Name";
 
         ChangeState(ParserState.InsideBlockBody);
@@ -118,7 +121,7 @@ public class TomBenBlockParser : MonoBehaviour
     private void ParseInsideBlock()
     {
         //Read All Data between _Tom & _Ben
-        while (!BufferHasAny(" ") && !ReachedEnd())
+        while (!BufferHasAny("_Ben") && !ReachedEnd())
             NextChar();
 
         if (ReachedEnd())
@@ -139,5 +142,15 @@ public class TomBenBlockParser : MonoBehaviour
         return lastMatched;
     }
 
+    private string GetLastMatchedHeaderID()
+    {
+        string lastMatched = null;
+        return lastMatched;
+    }
+    private string GetLastMatchedHeaderName()
+    {
+        string lastMatched = null;
+        return lastMatched;
+    }
  
 }
