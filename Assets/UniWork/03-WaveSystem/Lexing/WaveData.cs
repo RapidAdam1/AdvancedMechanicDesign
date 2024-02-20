@@ -65,9 +65,8 @@ public class WaveData
                     break;
 
             }
-            Debug.Log($"Spawned type {Type.id} {Type.name}");
-            Spawned++;
         }
+        Spawned++;
 
     }
 
@@ -76,8 +75,6 @@ public class WaveData
         Regex RegexPattern = new Regex(@"(\d*):(\d*)");
         MatchCollection RegexMatch = RegexPattern.Matches(Cluster.content);
         
-        Debug.Log($"Cluster {Cluster.id}");
-        Debug.Log(RegexMatch.Count);
         for (int i = 0; i < RegexMatch.Count; i++)
         {
             int ReadID = int.Parse(RegexMatch[i].Groups[1].ToString());
