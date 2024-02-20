@@ -1,5 +1,3 @@
-using Codice.Client.Common;
-using Codice.CM.Common;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -30,7 +28,7 @@ public class WaveData : MonoBehaviour
             }
         }
 
-        ReadCluster(Clusters[0]);
+        ReadWave(Waves[0]);
     }
 
     ParsedBlock GetBlockFromID(int ID, List<ParsedBlock> List)
@@ -94,10 +92,61 @@ public class WaveData : MonoBehaviour
 
     void ReadWave(ParsedBlock Wave)
     {
-        /// REGEX PATTERN =    [^!?]+(\w)+\[(\d)\]
-        /// REGEX GET DATA BETWEEN INTERROBANGS = (?:[^!?]*)
-        /// REGEX GET TYPE/CLUSTER ID (?:[^!?]*(?:(\w)(\d)))
+        /// REGEX Capture All NOT Interrobang (?:(\w)(\d)[^\!\?]*);
+        //  (?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)
+        Regex RegexPattern = new Regex(@"(?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)");
+        MatchCollection RegexMatch = RegexPattern.Matches(Wave.content);
 
-        Regex RegexPattern = new Regex(@"[^!?]+(\w)+\[(\d)\]");
+        Debug.Log($"Wave ID{Wave.id}");
+        for (int i = 0; i < RegexMatch.Count; i++)
+        {
+            //TypeToRead
+            char Type = RegexMatch[i].Groups[1].Value.ToString()[0];
+            int ID = int.Parse(RegexMatch[i].Groups[2].Value.ToString());
+            int WaitTime = 0;
+            int Threshold = 0;
+
+            if (RegexMatch[i].Groups[3].Success)
+            WaitTime = int.Parse(RegexMatch[i].Groups[3].ToString());
+            if(RegexMatch[i].Groups[4].Success)
+            Threshold = int.Parse(RegexMatch[i].Groups[4].ToString());
+
+            if(WaitTime ==0 || Threshold == 0)
+            {
+                if (Type == 'C')
+                {
+                    //SpawnType(GetBlockFromID(ID, Clusters));
+                }
+                else if (Type == 'T')
+                {
+                    //SpawnType(GetBlockFromID(ID, Types));
+                }
+                else
+                    Debug.LogError($"WrongDataFormatPassed {Type}");
+            }
+
+            Debug.Log($"Spawn: {Type} {ID} With Parameters:\nThreshold:{Threshold} WaitTime:{WaitTime}");
+
+        }
+    }
+
+    IEnumerator WaitForSpawn()
+    {
+        float CurrWaitTime = 0;
+        int WaitTime = 5;
+        int ThresholdEnemies = 5;
+        int CurrEnemies= 5;
+        
+        if(WaitTime != 0 || ThresholdEnemies != 0)
+        {
+            while (CurrWaitTime >= WaitTime || ThresholdEnemies < CurrEnemies)
+            {
+                CurrEnemies = 5;//Get Enemies
+                CurrWaitTime += Time.deltaTime;
+                yield return new WaitForFixedUpdate();
+            }
+        }
+        //SpawnEnemy
+        //NextRead
     }
 }
