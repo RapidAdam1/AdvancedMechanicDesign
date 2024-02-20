@@ -9,7 +9,6 @@ public class WaveData
     List<ParsedBlock> Waves = new List<ParsedBlock>();
     List<ParsedBlock> Clusters = new List<ParsedBlock>();
 
-    int Spawned = 0;
     /// Class to Manage Spawning Logic of Waves
     public void SortToLists(List<ParsedBlock> list)
     {
@@ -66,8 +65,6 @@ public class WaveData
 
             }
         }
-        Spawned++;
-
     }
 
     void ReadCluster(ParsedBlock Cluster)
@@ -117,7 +114,6 @@ public class WaveData
 
             //NextRead
         }
-        Debug.Log(Spawned);
     }
     IEnumerator ReadWave(ParsedBlock Wave)
     {
