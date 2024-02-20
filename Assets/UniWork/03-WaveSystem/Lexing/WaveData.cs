@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-public class WaveData : MonoBehaviour
+public class WaveData
 {
     List<ParsedBlock> Types = new List<ParsedBlock>(); 
     List<ParsedBlock> Waves = new List<ParsedBlock>();
     List<ParsedBlock> Clusters = new List<ParsedBlock>();
-    
+
+    int Spawned = 0;
     /// Class to Manage Spawning Logic of Waves
     public void SortToLists(List<ParsedBlock> list)
     {
@@ -27,8 +28,7 @@ public class WaveData : MonoBehaviour
                     break;
             }
         }
-
-        ReadWave(Waves[0]);
+        ProcessWave(Waves[0]);
     }
 
     ParsedBlock GetBlockFromID(int ID, List<ParsedBlock> List)
@@ -65,7 +65,8 @@ public class WaveData : MonoBehaviour
                     break;
 
             }
-            Debug.Log($"Spawned type {Type.id}");
+            Debug.Log($"Spawned type {Type.id} {Type.name}");
+            Spawned++;
         }
 
     }
@@ -74,32 +75,61 @@ public class WaveData : MonoBehaviour
     {
         Regex RegexPattern = new Regex(@"(\d*):(\d*)");
         MatchCollection RegexMatch = RegexPattern.Matches(Cluster.content);
-        Debug.Log($"Cluster {Cluster.id}");
         
+        Debug.Log($"Cluster {Cluster.id}");
+        Debug.Log(RegexMatch.Count);
         for (int i = 0; i < RegexMatch.Count; i++)
         {
             int ReadID = int.Parse(RegexMatch[i].Groups[1].ToString());
             int IDCount = int.Parse(RegexMatch[i].Groups[2].ToString());
 
-            Debug.Log($"Spawn ID:{ReadID} for {IDCount}");
             for(int j = 0; j < IDCount; j++)
             {
-                //GetTypeFromID
-                //SpawnID
+                SpawnType(GetBlockFromID(ReadID, Types));
             }
         }
     }
 
-    void ReadWave(ParsedBlock Wave)
+    void ProcessWave(ParsedBlock Wave)
     {
-        /// REGEX Capture All NOT Interrobang (?:(\w)(\d)[^\!\?]*);
-        //  (?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)
         Regex RegexPattern = new Regex(@"(?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)");
         MatchCollection RegexMatch = RegexPattern.Matches(Wave.content);
-
-        Debug.Log($"Wave ID{Wave.id}");
         for (int i = 0; i < RegexMatch.Count; i++)
         {
+
+
+            //TypeToRead
+            char Type = RegexMatch[i].Groups[1].Value.ToString()[0];
+            int ID = int.Parse(RegexMatch[i].Groups[2].Value.ToString());
+            int WaitTime = 0;
+            int Threshold = 0;
+
+            WaitTime = RegexMatch[i].Groups[3].Success ? int.Parse(RegexMatch[i].Groups[3].ToString()) : 0;
+            Threshold = RegexMatch[i].Groups[4].Success ? int.Parse(RegexMatch[i].Groups[4].ToString()) : 0;
+
+            if (WaitTime != 0 || Threshold != 0)
+            {
+                float CurrWaitTime = 0;
+                int CurrEnemies = 5;
+            }
+            //SpawnEnemy
+            if (Type == 'T')
+                SpawnType(GetBlockFromID(ID, Types));
+            else if (Type == 'C')
+                ReadCluster(GetBlockFromID(ID, Clusters));
+
+            //NextRead
+        }
+        Debug.Log(Spawned);
+    }
+    IEnumerator ReadWave(ParsedBlock Wave)
+    {
+        Regex RegexPattern = new Regex(@"(?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)");
+        MatchCollection RegexMatch = RegexPattern.Matches(Wave.content);
+        for (int i = 0; i < RegexMatch.Count; i++)
+        {
+
+
             //TypeToRead
             char Type = RegexMatch[i].Groups[1].Value.ToString()[0];
             int ID = int.Parse(RegexMatch[i].Groups[2].Value.ToString());
@@ -107,46 +137,29 @@ public class WaveData : MonoBehaviour
             int Threshold = 0;
 
             if (RegexMatch[i].Groups[3].Success)
-            WaitTime = int.Parse(RegexMatch[i].Groups[3].ToString());
-            if(RegexMatch[i].Groups[4].Success)
-            Threshold = int.Parse(RegexMatch[i].Groups[4].ToString());
+                WaitTime = int.Parse(RegexMatch[i].Groups[3].ToString());
+            if (RegexMatch[i].Groups[4].Success)
+                Threshold = int.Parse(RegexMatch[i].Groups[4].ToString());
 
-            if(WaitTime ==0 || Threshold == 0)
+            if (WaitTime != 0 || Threshold!= 0)
             {
-                if (Type == 'C')
-                {
-                    //SpawnType(GetBlockFromID(ID, Clusters));
-                }
-                else if (Type == 'T')
-                {
-                    //SpawnType(GetBlockFromID(ID, Types));
-                }
-                else
-                    Debug.LogError($"WrongDataFormatPassed {Type}");
+                float CurrWaitTime = 0;
+                int CurrEnemies = 5;
+                /*                while (CurrWaitTime >= WaitTime || Threshold< CurrEnemies)
+                                {
+                                    CurrEnemies = 5;//Get Enemies
+                                    CurrWaitTime += Time.deltaTime;
+                                    yield return new WaitForFixedUpdate();
+                                }*/
+
             }
-
-            Debug.Log($"Spawn: {Type} {ID} With Parameters:\nThreshold:{Threshold} WaitTime:{WaitTime}");
-
+            //SpawnEnemy
+            if (Type == 'T')
+                SpawnType(GetBlockFromID(ID, Types));
+            else if (Type == 'C')
+                ReadCluster(GetBlockFromID(ID, Clusters));
         }
-    }
 
-    IEnumerator WaitForSpawn()
-    {
-        float CurrWaitTime = 0;
-        int WaitTime = 5;
-        int ThresholdEnemies = 5;
-        int CurrEnemies= 5;
-        
-        if(WaitTime != 0 || ThresholdEnemies != 0)
-        {
-            while (CurrWaitTime >= WaitTime || ThresholdEnemies < CurrEnemies)
-            {
-                CurrEnemies = 5;//Get Enemies
-                CurrWaitTime += Time.deltaTime;
-                yield return new WaitForFixedUpdate();
-            }
-        }
-        //SpawnEnemy
-        //NextRead
+        yield break;
     }
 }

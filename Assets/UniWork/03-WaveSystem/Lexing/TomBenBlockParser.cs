@@ -75,7 +75,6 @@ public class TomBenBlockParser : MonoBehaviour
         //Read All the File
         fileContent =  File.ReadAllText(filepath);
 
-        Debug.Log(fileContent);
         while (!ReachedEnd())
         {
             switch (state)
