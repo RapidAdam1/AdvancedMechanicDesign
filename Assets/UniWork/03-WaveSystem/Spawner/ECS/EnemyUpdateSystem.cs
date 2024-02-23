@@ -3,10 +3,11 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 
 [BurstCompile]
-public partial struct CubeUpdateSystem : ISystem
+public partial struct EnemyUpdateSystem: ISystem
 {
     private ComponentLookup<LocalToWorld> LookupLocal2World;
 
@@ -16,22 +17,22 @@ public partial struct CubeUpdateSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         LookupLocal2World = state.GetComponentLookup<LocalToWorld>();
-        state.RequireForUpdate<PlayerTag>();
+        state.RequireForUpdate<DesiredLocation>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        if(PlayerEntity == Entity.Null)
+        if (PlayerEntity == Entity.Null)
         {
-            PlayerEntity = SystemAPI.GetSingletonEntity<PlayerTag>();
+            PlayerEntity = SystemAPI.GetSingletonEntity<DesiredLocation>();
         }
 
         EntityCommandBuffer.ParallelWriter ecb = GetECB(ref state);
-        
+
         LookupLocal2World.Update(ref state);
 
-        CubeUpdateJob Job = new CubeUpdateJob
+        EnemyUpdateJob UpdatePosJob = new EnemyUpdateJob
         {
             ECB = ecb,
             LookupLocal2World = LookupLocal2World,
@@ -39,10 +40,10 @@ public partial struct CubeUpdateSystem : ISystem
             PlayerEntity = PlayerEntity,
         };
 
-        Job.ScheduleParallel();
+        UpdatePosJob.ScheduleParallel();
     }
 
-    private EntityCommandBuffer.ParallelWriter GetECB(ref  SystemState state)
+    private EntityCommandBuffer.ParallelWriter GetECB(ref SystemState state)
     {
         BeginSimulationEntityCommandBufferSystem.Singleton ECBSinglton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ECBSinglton.CreateCommandBuffer(state.WorldUnmanaged);
@@ -50,9 +51,8 @@ public partial struct CubeUpdateSystem : ISystem
     }
 }
 
-
 [BurstCompile]
-public partial struct CubeUpdateJob : IJobEntity
+public partial struct EnemyUpdateJob : IJobEntity
 {
     public EntityCommandBuffer.ParallelWriter ECB;
     public Entity PlayerEntity;
@@ -61,16 +61,16 @@ public partial struct CubeUpdateJob : IJobEntity
     [ReadOnly]
     public ComponentLookup<LocalToWorld> LookupLocal2World;
 
-    public void Execute([ChunkIndexInQuery] int index, in CubeComponent2 CubeComp,in Entity e,in LocalToWorld CubeL2W)
+    public void Execute([ChunkIndexInQuery] int index, in EnemyComponent EnemyComp, in Entity e, in LocalToWorld EnemyL2W)
     {
-        LocalToWorld PlayerL2W = LookupLocal2World[PlayerEntity];
-        float3 playerWorldPos = PlayerL2W.Position;
+        LocalToWorld TargetL2W = LookupLocal2World[PlayerEntity];
+        float3 DesiredPos = TargetL2W.Position;
 
-        float3 TargetVector = playerWorldPos - CubeL2W.Position;
-        TargetVector = math.normalizesafe(TargetVector) * deltaTime * CubeComp.Speed;
-        
-        float3 TargetPos = CubeL2W.Position + TargetVector;
-        
+        float3 TargetVector = DesiredPos - EnemyL2W.Position;
+        TargetVector = math.normalizesafe(TargetVector) * deltaTime * EnemyComp.Speed;
+
+        float3 TargetPos = EnemyL2W.Position + TargetVector;
+
         LocalTransform transform = LocalTransform.FromPosition(TargetPos);
         ECB.SetComponent<LocalTransform>(index, e, transform);
     }
