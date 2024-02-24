@@ -29,16 +29,18 @@ public class TomBenBlockParser : MonoBehaviour
     bool IsDuplicate = false;
     //File to Parse
     private string fileContent = "";
+
+    WaveData PersistentWave;
     private void Awake()
     {
         if (!File.Exists(InputFile))
             throw new UnityException("Cant Open File");
 
+        PersistentWave = GetComponent<WaveData>();
         TomBenBlockParser blockParser = new TomBenBlockParser();
         blocks = blockParser.ParseFromFile(InputFile);
 
-        WaveData waveData = new WaveData();
-        waveData.SortToLists(blocks);
+        PersistentWave.SortToLists(blocks);
         
     }
 
