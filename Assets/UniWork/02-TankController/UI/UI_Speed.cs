@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class UI_Speed : MonoBehaviour
 {
     Text SpeedText;
-    int Speed;
+    public int Speed;
     [SerializeField] Rigidbody TankRB;
 
     private void Awake()
