@@ -9,8 +9,7 @@ using System.Collections;
 public class TomBenBlockParser : MonoBehaviour
 {
     [SerializeField] EnemyToSpawn EnemyPrefab;
-    [SerializeField]
-    private string InputFile;
+    [SerializeField] private string InputFile;
 
     //Current Block Parsing & List of Already Parsed Blocks
     private ParsedBlock currentBlock = new ParsedBlock();
@@ -265,20 +264,24 @@ public class TomBenBlockParser : MonoBehaviour
         Vector3 RandomPos = new Vector3(0, 0, Random.Range(-5, 6));
         EnemyToSpawn Temp = Instantiate(EnemyPrefab, transform.position+RandomPos, transform.rotation);
         Temp.Init(Speed, Damage, Health,Type.id);
-        Debug.Log($"Type: {Type.id}");
         EnemiesSpawned++;
+        Temp.UpdateEnemyCount += UpdateCount;
+        Debug.Log($"Type {Type.id}");
+    }
+
+    void UpdateCount()
+    {
+        EnemiesSpawned--;
     }
 
     void ReadCluster(ParsedBlock Cluster)
     {
         Regex RegexPattern = new Regex(@"(\d*):(\d*)");
         MatchCollection RegexMatch = RegexPattern.Matches(Cluster.content);
-        Debug.Log($"{Cluster.id}-Number of Groups: {RegexMatch.Count}\n");
         for (int i = 0; i < RegexMatch.Count; i++)
         {
             int ReadID = int.Parse(RegexMatch[i].Groups[1].ToString());
             int IDCount = int.Parse(RegexMatch[i].Groups[2].ToString());
-            Debug.Log($"Index {i} - {ReadID} for {IDCount}");
 
             for (int j = 0; j < IDCount; j++)
             {
@@ -293,7 +296,7 @@ public class TomBenBlockParser : MonoBehaviour
         MatchCollection RegexMatch = RegexPattern.Matches(m_CurrentWave.content);
         for (int i = 0; i < RegexMatch.Count; i++)
         {
-
+            Debug.Log(RegexMatch[i]);
 
             yield return new WaitForSeconds(0.5f);
             //TypeToRead
@@ -306,12 +309,9 @@ public class TomBenBlockParser : MonoBehaviour
 
 
             float CurrentWaitTime = 0;
-            int CurrentEnemiesInScene = 0;
-            while (CurrentWaitTime < WaitTime && Threshold < CurrentEnemiesInScene)
+            while (CurrentWaitTime < WaitTime && Threshold < EnemiesSpawned)
             {
-                CurrentEnemiesInScene = GetComponents<EnemyToSpawn>().Length;
                 CurrentWaitTime += Time.deltaTime;
-                CurrentEnemiesInScene = 5;
                 yield return new WaitForFixedUpdate();
             }
 

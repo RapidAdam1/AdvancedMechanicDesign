@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(CapsuleCollider))]
 public class EnemyToSpawn : MonoBehaviour
 {
+    public event Action UpdateEnemyCount;
+
     CapsuleCollider Coll;
     [SerializeField] Transform Target;
 
@@ -36,6 +39,12 @@ public class EnemyToSpawn : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Death")
+        {
+            
             Destroy(gameObject);
+            if(Active)
+                UpdateEnemyCount?.Invoke();
+            Active = false;
+        }
     }
 }
