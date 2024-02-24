@@ -350,7 +350,6 @@ GameObject:
   m_Component:
   - component: {fileID: 933235346}
   - component: {fileID: 933235345}
-  - component: {fileID: 933235347}
   m_Layer: 0
   m_Name: WaveSpawner
   m_TagString: Untagged
@@ -370,6 +369,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0730dfa2ce4803e4abd6cb76125a5eee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EnemyPrefab: {fileID: 2084593700}
   InputFile: Assets/UniWork/03-WaveSystem/TestFiles/AMD_03_Optional_E.TomBen
   blocks: []
 --- !u!4 &933235346
@@ -387,19 +387,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &933235347
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 933235344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 728d62e3ee0994440a63d9ed296af8dd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  EnemyPrefab: {fileID: 2084593700}
 --- !u!1 &2084593699
 GameObject:
   m_ObjectHideFlags: 0
