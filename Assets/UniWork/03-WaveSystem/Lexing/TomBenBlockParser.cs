@@ -271,7 +271,8 @@ public class TomBenBlockParser : MonoBehaviour
 
     void UpdateCount()
     {
-        EnemiesSpawned-=1;
+        EnemiesSpawned--;
+        Debug.Log($"Enemies Remaining{EnemiesSpawned}");
     }
 
     void ReadCluster(ParsedBlock Cluster)
@@ -302,22 +303,42 @@ public class TomBenBlockParser : MonoBehaviour
             //TypeToRead
             char Type = RegexMatch[i].Groups[1].Value.ToString()[0];
             int ID = int.Parse(RegexMatch[i].Groups[2].Value.ToString());
-            
-            if (Type == 'T')
-                SpawnType(GetBlockFromID(ID, Types));
 
-            float WaitTime = RegexMatch[i].Groups[3].Success ? int.Parse(RegexMatch[i].Groups[3].ToString()) : 999;
-            int Threshold = RegexMatch[i].Groups[4].Success ? int.Parse(RegexMatch[i].Groups[4].ToString()) : 0;
-
+            bool WaitParam = RegexMatch[i].Groups[3].Success;
+            bool ThresholdParam= RegexMatch[i].Groups[4].Success;
+            float WaitTime = 0;
+            int Threshold = 0;
+            if (WaitParam)
+            {
+                WaitTime = int.Parse(RegexMatch[i].Groups[3].ToString());
+            }
+            if (ThresholdParam)
+            {
+                Debug.Log(RegexMatch[i].Groups[4].ToString());
+                Threshold = int.Parse(RegexMatch[i].Groups[4].ToString());
+            }
 
             float CurrentWaitTime = 0;
-            while (CurrentWaitTime < WaitTime && Threshold < EnemiesSpawned)
+            while (WaitParam || ThresholdParam)
             {
-                CurrentWaitTime += Time.deltaTime;
+                if (WaitParam)
+                {
+                    CurrentWaitTime += Time.deltaTime;
+                    if (CurrentWaitTime >= WaitTime)
+                        break;
+                }
+                if (ThresholdParam)
+                {
+                    if (EnemiesSpawned <= Threshold)
+                        break;
+                }
                 yield return new WaitForFixedUpdate();
             }
 
-            if (Type == 'C')
+            //SpawnEnemy
+            if (Type == 'T')
+                SpawnType(GetBlockFromID(ID, Types));
+            else if (Type == 'C')
                 ReadCluster(GetBlockFromID(ID, Clusters));
 
         }
