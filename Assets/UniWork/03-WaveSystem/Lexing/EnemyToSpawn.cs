@@ -6,18 +6,20 @@ using UnityEngine;
 public class EnemyToSpawn : MonoBehaviour
 {
     CapsuleCollider Coll;
-    [SerializeField] Vector3 Target;
+    [SerializeField] Transform Target;
 
     public int m_Speed;
     public int m_Health;
     public int m_Damage;
     public int m_ID;
+    bool Active;
     public void Init(int speed,int damage,int health, int TypeID)
     {
         m_Speed = speed;
         m_Health = health;
         m_Damage = damage;
         m_ID = TypeID;
+        Active = true;
     }
 
     private void Awake()
@@ -27,6 +29,13 @@ public class EnemyToSpawn : MonoBehaviour
 
     void FixedUpdate()
     {
-        Vector3.MoveTowards(transform.position, Target, m_Speed * Time.deltaTime);
+        if(Active)
+            transform.position = Vector3.MoveTowards(transform.position, Target.position, m_Speed * Time.deltaTime);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Death")
+            Destroy(gameObject);
     }
 }

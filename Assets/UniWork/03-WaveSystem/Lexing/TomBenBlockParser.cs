@@ -261,7 +261,9 @@ public class TomBenBlockParser : MonoBehaviour
 
             }
         }
-        EnemyToSpawn Temp = Instantiate(EnemyPrefab, transform.position, transform.rotation);
+
+        Vector3 RandomPos = new Vector3(0, 0, Random.Range(-5, 6));
+        EnemyToSpawn Temp = Instantiate(EnemyPrefab, transform.position+RandomPos, transform.rotation);
         Temp.Init(Speed, Damage, Health,Type.id);
         Debug.Log($"Type: {Type.id}");
         EnemiesSpawned++;
@@ -304,14 +306,13 @@ public class TomBenBlockParser : MonoBehaviour
 
 
             float CurrentWaitTime = 0;
-            int CurrentEnemiesInScene = 5;
+            int CurrentEnemiesInScene = 0;
             while (CurrentWaitTime < WaitTime && Threshold < CurrentEnemiesInScene)
             {
-
+                CurrentEnemiesInScene = GetComponents<EnemyToSpawn>().Length;
                 CurrentWaitTime += Time.deltaTime;
                 CurrentEnemiesInScene = 5;
                 yield return new WaitForFixedUpdate();
-                break;
             }
 
             //SpawnEnemy
