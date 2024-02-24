@@ -271,7 +271,7 @@ public class TomBenBlockParser : MonoBehaviour
 
     void UpdateCount()
     {
-        EnemiesSpawned--;
+        EnemiesSpawned-=1;
     }
 
     void ReadCluster(ParsedBlock Cluster)
@@ -302,7 +302,9 @@ public class TomBenBlockParser : MonoBehaviour
             //TypeToRead
             char Type = RegexMatch[i].Groups[1].Value.ToString()[0];
             int ID = int.Parse(RegexMatch[i].Groups[2].Value.ToString());
-
+            
+            if (Type == 'T')
+                SpawnType(GetBlockFromID(ID, Types));
 
             float WaitTime = RegexMatch[i].Groups[3].Success ? int.Parse(RegexMatch[i].Groups[3].ToString()) : 999;
             int Threshold = RegexMatch[i].Groups[4].Success ? int.Parse(RegexMatch[i].Groups[4].ToString()) : 0;
@@ -315,10 +317,7 @@ public class TomBenBlockParser : MonoBehaviour
                 yield return new WaitForFixedUpdate();
             }
 
-            //SpawnEnemy
-            if (Type == 'T')
-                SpawnType(GetBlockFromID(ID, Types));
-            else if (Type == 'C')
+            if (Type == 'C')
                 ReadCluster(GetBlockFromID(ID, Clusters));
 
         }
