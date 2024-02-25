@@ -6,7 +6,7 @@ using Unity.Transforms;
 
 
 [BurstCompile]
-public partial struct CubeUpdateSystem : ISystem
+public partial struct EnemyUpdate : ISystem
 {
     private ComponentLookup<LocalToWorld> LookupLocal2World;
 
@@ -61,13 +61,13 @@ public partial struct CubeUpdateJob : IJobEntity
     [ReadOnly]
     public ComponentLookup<LocalToWorld> LookupLocal2World;
 
-    public void Execute([ChunkIndexInQuery] int index, in CubeComponent2 CubeComp,in Entity e,in LocalToWorld CubeL2W)
+    public void Execute([ChunkIndexInQuery] int index, in Enemy CubeComp,in Entity e,in LocalToWorld CubeL2W)
     {
         LocalToWorld PlayerL2W = LookupLocal2World[PlayerEntity];
         float3 playerWorldPos = PlayerL2W.Position;
 
         float3 TargetVector = playerWorldPos - CubeL2W.Position;
-        TargetVector = math.normalizesafe(TargetVector) * deltaTime * CubeComp.Speed;
+        TargetVector = math.normalizesafe(TargetVector) * deltaTime * CubeComp.m_Speed;
         
         float3 TargetPos = CubeL2W.Position + TargetVector;
         
