@@ -15,9 +15,10 @@ public class UI_Speed : MonoBehaviour
         SpeedText = GetComponent<Text>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         Speed = (int)TankRB.velocity.magnitude;
         SpeedText.text = Speed + " mph";
+        
     }
 }

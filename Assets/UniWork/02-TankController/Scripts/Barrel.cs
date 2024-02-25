@@ -22,8 +22,8 @@ public class Barrel : MonoBehaviour
 		if (m_RB.velocity.magnitude > 0.5f)
         {
 			m_CurrentDispersion = m_RB.velocity.magnitude;
-			m_CurrentDispersion /= 100;
-			FireDir += new Vector3(Random.Range(-m_CurrentDispersion, m_CurrentDispersion),Random.Range(-m_CurrentDispersion,m_CurrentDispersion));
+			m_CurrentDispersion /= 200;
+			FireDir += new Vector3(Random.Range(-m_CurrentDispersion, m_CurrentDispersion),0);
 		}
 		Shell NewShell = Instantiate(m_ShellPrefab, FireTransform.position, FireTransform.rotation);
 		NewShell.Init(m_Data.ShellData, FireDir);
