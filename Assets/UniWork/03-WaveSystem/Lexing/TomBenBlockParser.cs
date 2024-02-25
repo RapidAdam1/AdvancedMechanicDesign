@@ -23,6 +23,8 @@ public class TomBenBlockParser : MonoBehaviour
     int EnemiesSpawned = 0;
     ParsedBlock m_CurrentWave;
     //Parser States
+
+    #region Initial Read
     private enum ParserState
     {
         InsideBlockBody, InsideBlockHeader, OutsideBlock
@@ -203,8 +205,9 @@ public class TomBenBlockParser : MonoBehaviour
 
         return false;
     }
+    #endregion
 
- 
+    #region Spawning
     ///Manage Spawning Logic of Waves
     public void SortToLists(List<ParsedBlock> list)
     {
@@ -293,56 +296,64 @@ public class TomBenBlockParser : MonoBehaviour
 
     IEnumerator ReadWave()
     {
-        Regex RegexPattern = new Regex(@"(?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)");
-        MatchCollection RegexMatch = RegexPattern.Matches(m_CurrentWave.content);
-        for (int i = 0; i < RegexMatch.Count; i++)
+        foreach (ParsedBlock Wave in Waves)
         {
-            Debug.Log(RegexMatch[i]);
-
-            yield return new WaitForSeconds(0.5f);
-            //TypeToRead
-            char Type = RegexMatch[i].Groups[1].Value.ToString()[0];
-            int ID = int.Parse(RegexMatch[i].Groups[2].Value.ToString());
-
-            bool WaitParam = RegexMatch[i].Groups[3].Success;
-            bool ThresholdParam= RegexMatch[i].Groups[4].Success;
-            float WaitTime = 0;
-            int Threshold = 0;
-            if (WaitParam)
+            Regex RegexPattern = new Regex(@"(?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)");
+            MatchCollection RegexMatch = RegexPattern.Matches(Wave.content);
+            for (int i = 0; i < RegexMatch.Count; i++)
             {
-                WaitTime = int.Parse(RegexMatch[i].Groups[3].ToString());
-            }
-            if (ThresholdParam)
-            {
-                Debug.Log(RegexMatch[i].Groups[4].ToString());
-                Threshold = int.Parse(RegexMatch[i].Groups[4].ToString());
-            }
+                Debug.Log(RegexMatch[i]);
 
-            float CurrentWaitTime = 0;
-            while (WaitParam || ThresholdParam)
-            {
+                yield return new WaitForSeconds(0.5f);
+                //TypeToRead
+                char Type = RegexMatch[i].Groups[1].Value.ToString()[0];
+                int ID = int.Parse(RegexMatch[i].Groups[2].Value.ToString());
+
+                bool WaitParam = RegexMatch[i].Groups[3].Success;
+                bool ThresholdParam = RegexMatch[i].Groups[4].Success;
+                float WaitTime = 0;
+                int Threshold = 0;
                 if (WaitParam)
                 {
-                    CurrentWaitTime += Time.deltaTime;
-                    if (CurrentWaitTime >= WaitTime)
-                        break;
+                    WaitTime = int.Parse(RegexMatch[i].Groups[3].ToString());
                 }
                 if (ThresholdParam)
                 {
-                    if (EnemiesSpawned <= Threshold)
-                        break;
+                    Debug.Log(RegexMatch[i].Groups[4].ToString());
+                    Threshold = int.Parse(RegexMatch[i].Groups[4].ToString());
                 }
+
+                float CurrentWaitTime = 0;
+                while (WaitParam || ThresholdParam)
+                {
+                    if (WaitParam)
+                    {
+                        CurrentWaitTime += Time.deltaTime;
+                        if (CurrentWaitTime >= WaitTime)
+                            break;
+                    }
+                    if (ThresholdParam)
+                    {
+                        if (EnemiesSpawned <= Threshold)
+                            break;
+                    }
+                    yield return new WaitForFixedUpdate();
+                }
+
+                //SpawnEnemy
+                if (Type == 'T')
+                    SpawnType(GetBlockFromID(ID, Types));
+                else if (Type == 'C')
+                    ReadCluster(GetBlockFromID(ID, Clusters));
+
+            }
+            Debug.Log(EnemiesSpawned);
+            while (EnemiesSpawned != 0)
+            {
                 yield return new WaitForFixedUpdate();
             }
 
-            //SpawnEnemy
-            if (Type == 'T')
-                SpawnType(GetBlockFromID(ID, Types));
-            else if (Type == 'C')
-                ReadCluster(GetBlockFromID(ID, Clusters));
-
         }
-        Debug.Log(EnemiesSpawned);
-        yield return null;
     }
+#endregion
 }
