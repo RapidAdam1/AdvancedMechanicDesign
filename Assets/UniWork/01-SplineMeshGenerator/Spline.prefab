@@ -345,7 +345,6 @@ MonoBehaviour:
   Sleepers: {fileID: 3910517121478106359}
   Pillars: {fileID: 7802845961587937814}
   SleeperOffset: 0
-  m_SleeperScale: {x: 3.49, y: 0.74}
 --- !u!114 &4556144504137913748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1454,8 +1453,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36bcae5416ae5804fbeb5ec59a2553f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SleeperScale: {x: 0.349, y: -0.074}
+  SleeperScale: {x: 0.1, y: -0.1}
   SleeperLength: 1
   SleeperOffset: 0
-  TotalSteps: 98
+  TotalSteps: 28
   m_SplineContainer: {fileID: 4556144504137913748}

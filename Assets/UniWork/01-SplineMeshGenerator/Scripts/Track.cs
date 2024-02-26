@@ -131,7 +131,11 @@ public class ProcPlaneEditorWindow : EditorWindow
 
     private void OnGUI()
     {
-
+        if (Selection.activeGameObject == null)
+        {
+            GUILayout.Label("Select an Object to Use Tool");
+            return;
+        }
         Track target = Selection.gameObjects[0].GetComponent<Track>();
         if(SelectedTarget != target)
         {
@@ -141,6 +145,7 @@ public class ProcPlaneEditorWindow : EditorWindow
 
             RailX = SelectedTarget.RailScale.x.ToString();
             RailY= SelectedTarget.RailScale.y.ToString();
+
         }
 
         if (SelectedTarget != null)
@@ -191,7 +196,6 @@ public class ProcPlaneEditorWindow : EditorWindow
                 SelectedTarget.PillarScale = tempPillarScale;
                 SelectedTarget.OnValidate();
             }
-
 
             //Sleeper Scale
             GUILayout.Label("");
