@@ -8,7 +8,7 @@ using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 public class Track : MonoBehaviour
 {
-    [SerializeField][Range(1, 4)] float m_TrackWidth;
+    float m_TrackWidth = 1;
     [SerializeField][Range(1, 500)] int Resolution;
 
 
@@ -17,12 +17,35 @@ public class Track : MonoBehaviour
         get { return m_TrackWidth; }
         set { m_TrackWidth = value; }
     }
+    public float MinimumPillarHeight
+    {
+        get { return m_MinPillarHeight; }
+        set { m_MinPillarHeight = value; }
+    }
+
+    public float PillarScale
+    {
+        get { return m_PillarScale.x; }
+        set { m_PillarScale = new Vector2(value, value); }
+    }
+
+    public Vector2 RailScale
+    {
+        get { return m_RailScale; }
+        set { RailScale = value; }
+    }
+
+    public Vector2 SleeperScale
+    {
+        get { return m_SleeperScale; }
+        set { m_SleeperScale = value; }
+    }
 
     [SerializeField] private SplineContainer m_SplineContainer;
     private int m_Index = 0;
 
     //Rails
-    [SerializeField] Vector2 m_RailScale = new Vector2(.1f,.1f);
+    Vector2 m_RailScale = new Vector2(.1f,.1f);
     [SerializeField] SplineMesh OuterTrack;
     [SerializeField] SplineMesh InnerTrack;
     [SerializeField] public SleeperMesh Sleepers;
@@ -34,8 +57,8 @@ public class Track : MonoBehaviour
     [SerializeField] Vector2 m_SleeperScale = Vector2.one;
 
     //Supports
-    [SerializeField] public float MinPillarHeight = 1f;
-    [SerializeField] Vector2 PillarScale = Vector2.one;
+    float m_MinPillarHeight = 1f;
+    Vector2 m_PillarScale = Vector2.one;
 
 
     private void Awake()
@@ -49,17 +72,7 @@ public class Track : MonoBehaviour
         OnValidate();
     }
 
-    public void AdjustTrackWidth(float Change)
-    {
-        m_TrackWidth = Mathf.Clamp(m_TrackWidth + Change, 1, 4);
-        OnValidate();
-    }
-
-    public void SetPillarHeight(float Value)
-    {
-        MinPillarHeight = Value;
-    }
-    private void OnValidate()
+    public void OnValidate()
     {
         m_SplineContainer = GetComponent<SplineContainer>();
         if (!m_SplineContainer)
@@ -67,7 +80,7 @@ public class Track : MonoBehaviour
         Spline Sp = m_SplineContainer[0];
         Sp.changed += OnValidate;
         Sleepers.Init(m_SplineContainer, m_Index, SleeperOffset,m_TrackWidth, m_SleeperScale);
-        Pillars.Init(m_SplineContainer, m_Index, m_TrackWidth, (int)Sleepers.TotalSteps, MinPillarHeight, PillarScale);
+        Pillars.Init(m_SplineContainer, m_Index, m_TrackWidth, (int)Sleepers.TotalSteps, m_MinPillarHeight, m_PillarScale);
         OuterTrack.Init(m_SplineContainer, m_Index, Resolution, +m_TrackWidth, m_RailScale);
         InnerTrack.Init(m_SplineContainer, m_Index, Resolution, -m_TrackWidth, m_RailScale);
     }
@@ -101,23 +114,26 @@ public class TrackEditor : Editor
 }
 public class ProcPlaneEditorWindow : EditorWindow
 {
-    float tempValue = 0.4f;
-
-
+    float tempMinHeight = 0.4f;
+    float tempPillarScale = 0.25f;
+    string SleeperX = "";
+    string SleeperY = "";
+    string RailX = "";
+    string RailY = "";
     [MenuItem("Window/SplineEditor")]
     public static void ShowWindow()
     {
         GetWindow<ProcPlaneEditorWindow>("SplineEditor");
     }
 
+
     private void OnGUI()
     {
-        GUILayout.Label("Spline Editor", EditorStyles.boldLabel);
-        float Scale = 0.2f;
 
         Track target = Selection.gameObjects[0].GetComponent<Track>();
         if (target != null)
         {
+            GUILayout.Label("Spline Editor", EditorStyles.boldLabel);
             //Loop Track
             GUILayout.BeginHorizontal();
             GUILayout.Label("Looped Track");
@@ -133,22 +149,67 @@ public class ProcPlaneEditorWindow : EditorWindow
             GUILayout.Label("Track Width");
             if (GUILayout.Button("+"))
             {
-                target.AdjustTrackWidth(+0.2f);
+                target.TrackWidth = Mathf.Clamp(target.TrackWidth += 0.2f, 1, 4);
+                target.OnValidate();
             }
             if (GUILayout.Button("-"))
             {
-                target.AdjustTrackWidth(-0.2f);
+                target.TrackWidth = Mathf.Clamp(target.TrackWidth -= 0.2f, 1, 4);
+                target.OnValidate();
             };
             GUILayout.EndHorizontal();
 
 
             //Scale Pillar Height
-            GUILayout.Label($"Minimum Pillar Height: {(Mathf.Round(target.MinPillarHeight * 100)) / 100.0}", EditorStyles.boldLabel);
-            float PreviousTempValue = tempValue;
-            tempValue = GUILayout.HorizontalSlider(tempValue, 0, 5);
-            if (tempValue != PreviousTempValue)
+            float PreviousTempValue = target.MinimumPillarHeight;
+            GUILayout.Label($"Minimum Pillar Height: {(Mathf.Round(PreviousTempValue * 100)) / 100.0}", EditorStyles.boldLabel);
+            tempMinHeight = GUILayout.HorizontalSlider(tempMinHeight, 0, 5);
+            if (tempMinHeight != PreviousTempValue)
             {
-                target.SetPillarHeight(tempValue);
+                target.MinimumPillarHeight = tempMinHeight;
+                target.OnValidate();
+            }
+
+            //Scale Pillar
+            float PillarScale = target.PillarScale;
+            GUILayout.Label($"\nPillar Scale: {(Mathf.Round(PillarScale * 100)) / 100.0}", EditorStyles.boldLabel);
+            tempPillarScale = GUILayout.HorizontalSlider(tempPillarScale, 0, 1);
+            if (tempPillarScale != PillarScale)
+            {
+                target.PillarScale = tempPillarScale;
+                target.OnValidate();
+            }
+
+
+            //Sleeper Scale
+            GUILayout.Label("");
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Sleeper Scale");
+            GUILayout.Label("X");
+            SleeperX = GUILayout.TextField($"{SleeperX}");
+            GUILayout.Label("Y");
+            SleeperY = GUILayout.TextField($"{SleeperY}");
+            GUILayout.EndHorizontal();
+
+            bool SuccessfullyParsedX = float.TryParse(SleeperX,out float SleeperXVal);
+            bool SuccessfullyParsedY = float.TryParse(SleeperY, out float SleeperYVal);
+            if (SuccessfullyParsedX && SuccessfullyParsedY)
+            {
+                target.SleeperScale = new Vector2(float.Parse(SleeperX),float.Parse(SleeperY));
+                target.OnValidate();
+            }
+        }
+        
+        else 
+        { 
+            if(GUILayout.Button("Find Spline"))
+            {
+                Track PotentialTrack = FindFirstObjectByType<Track>();
+                if(PotentialTrack != null)
+                {
+                    Selection.activeGameObject = PotentialTrack.gameObject;
+                }
+                Debug.Log(PotentialTrack);
             }
         }
     }
