@@ -32,7 +32,7 @@ public class Track : MonoBehaviour
     public Vector2 RailScale
     {
         get { return m_RailScale; }
-        set { RailScale = value; }
+        set { m_RailScale = value; }
     }
 
     public Vector2 SleeperScale
@@ -45,7 +45,6 @@ public class Track : MonoBehaviour
     private int m_Index = 0;
 
     //Rails
-    Vector2 m_RailScale = new Vector2(.1f,.1f);
     [SerializeField] SplineMesh OuterTrack;
     [SerializeField] SplineMesh InnerTrack;
     [SerializeField] public SleeperMesh Sleepers;
@@ -54,11 +53,12 @@ public class Track : MonoBehaviour
 
     //Sleepers
     [SerializeField] [Min(0)]float SleeperOffset;
-    [SerializeField] Vector2 m_SleeperScale = Vector2.one;
 
     //Supports
     float m_MinPillarHeight = 1f;
     Vector2 m_PillarScale = Vector2.one;
+    Vector2 m_SleeperScale = Vector2.one;
+    Vector2 m_RailScale = new Vector2(.1f,.1f);
 
 
     private void Awake()
@@ -120,6 +120,8 @@ public class ProcPlaneEditorWindow : EditorWindow
     string SleeperY = "";
     string RailX = "";
     string RailY = "";
+
+    Track SelectedTarget;
     [MenuItem("Window/SplineEditor")]
     public static void ShowWindow()
     {
@@ -131,7 +133,17 @@ public class ProcPlaneEditorWindow : EditorWindow
     {
 
         Track target = Selection.gameObjects[0].GetComponent<Track>();
-        if (target != null)
+        if(SelectedTarget != target)
+        {
+            SelectedTarget = target;
+            SleeperX = SelectedTarget.SleeperScale.x.ToString();
+            SleeperY = SelectedTarget.SleeperScale.y.ToString();
+
+            RailX = SelectedTarget.RailScale.x.ToString();
+            RailY= SelectedTarget.RailScale.y.ToString();
+        }
+
+        if (SelectedTarget != null)
         {
             GUILayout.Label("Spline Editor", EditorStyles.boldLabel);
             //Loop Track
@@ -139,7 +151,7 @@ public class ProcPlaneEditorWindow : EditorWindow
             GUILayout.Label("Looped Track");
             if (GUILayout.Button("Toggle"))
             {
-                target.ToggleLoopedTrack();
+                SelectedTarget.ToggleLoopedTrack();
             }
             GUILayout.EndHorizontal();
 
@@ -149,35 +161,35 @@ public class ProcPlaneEditorWindow : EditorWindow
             GUILayout.Label("Track Width");
             if (GUILayout.Button("+"))
             {
-                target.TrackWidth = Mathf.Clamp(target.TrackWidth += 0.2f, 1, 4);
-                target.OnValidate();
+                SelectedTarget.TrackWidth = Mathf.Clamp(SelectedTarget.TrackWidth += 0.2f, 1, 4);
+                SelectedTarget.OnValidate();
             }
             if (GUILayout.Button("-"))
             {
-                target.TrackWidth = Mathf.Clamp(target.TrackWidth -= 0.2f, 1, 4);
-                target.OnValidate();
+                SelectedTarget.TrackWidth = Mathf.Clamp(SelectedTarget.TrackWidth -= 0.2f, 1, 4);
+                SelectedTarget.OnValidate();
             };
             GUILayout.EndHorizontal();
 
 
             //Scale Pillar Height
-            float PreviousTempValue = target.MinimumPillarHeight;
+            float PreviousTempValue = SelectedTarget.MinimumPillarHeight;
             GUILayout.Label($"Minimum Pillar Height: {(Mathf.Round(PreviousTempValue * 100)) / 100.0}", EditorStyles.boldLabel);
             tempMinHeight = GUILayout.HorizontalSlider(tempMinHeight, 0, 5);
             if (tempMinHeight != PreviousTempValue)
             {
-                target.MinimumPillarHeight = tempMinHeight;
-                target.OnValidate();
+                SelectedTarget.MinimumPillarHeight = tempMinHeight;
+                SelectedTarget.OnValidate();
             }
 
             //Scale Pillar
-            float PillarScale = target.PillarScale;
+            float PillarScale = SelectedTarget.PillarScale;
             GUILayout.Label($"\nPillar Scale: {(Mathf.Round(PillarScale * 100)) / 100.0}", EditorStyles.boldLabel);
             tempPillarScale = GUILayout.HorizontalSlider(tempPillarScale, 0, 1);
             if (tempPillarScale != PillarScale)
             {
-                target.PillarScale = tempPillarScale;
-                target.OnValidate();
+                SelectedTarget.PillarScale = tempPillarScale;
+                SelectedTarget.OnValidate();
             }
 
 
@@ -191,12 +203,38 @@ public class ProcPlaneEditorWindow : EditorWindow
             SleeperY = GUILayout.TextField($"{SleeperY}");
             GUILayout.EndHorizontal();
 
-            bool SuccessfullyParsedX = float.TryParse(SleeperX,out float SleeperXVal);
-            bool SuccessfullyParsedY = float.TryParse(SleeperY, out float SleeperYVal);
-            if (SuccessfullyParsedX && SuccessfullyParsedY)
+
+            //Rail Scale
+            GUILayout.Label("");
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Sleeper Scale");
+            GUILayout.Label("X");
+            RailX = GUILayout.TextField($"{RailX}");
+            GUILayout.Label("Y");
+            RailY = GUILayout.TextField($"{RailY}");
+            GUILayout.EndHorizontal();
+
+            if (GUILayout.Button("Validate"))
             {
-                target.SleeperScale = new Vector2(float.Parse(SleeperX),float.Parse(SleeperY));
-                target.OnValidate();
+                float SleeperXVal;
+                float SleeperYVal;
+                bool SuccessfullyParsedX = float.TryParse(SleeperX, out  SleeperXVal);
+                bool SuccessfullyParsedY = float.TryParse(SleeperY, out  SleeperYVal);
+                if (SuccessfullyParsedX && SuccessfullyParsedY)
+                {
+                    SelectedTarget.SleeperScale = new Vector2(SleeperXVal, SleeperYVal);
+                }
+
+                float RailXVal;
+                float RailYVal;
+                bool SuccessfullyParsedRailX = float.TryParse(RailX, out RailXVal);
+                bool SuccessfullyParsedRailY = float.TryParse(RailY, out RailYVal);
+                if (SuccessfullyParsedRailX && SuccessfullyParsedRailY)
+                {
+                    SelectedTarget.RailScale = new Vector2(RailXVal, RailYVal);
+                }
+                SelectedTarget.OnValidate();
+
             }
         }
         
@@ -205,7 +243,7 @@ public class ProcPlaneEditorWindow : EditorWindow
             if(GUILayout.Button("Find Spline"))
             {
                 Track PotentialTrack = FindFirstObjectByType<Track>();
-                if(PotentialTrack != null)
+                if(PotentialTrack != null && Selection.activeGameObject != null)
                 {
                     Selection.activeGameObject = PotentialTrack.gameObject;
                 }
