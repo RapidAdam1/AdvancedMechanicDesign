@@ -1,7 +1,8 @@
 using System.Collections;
-using UnityEditor;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class MeshBuilder : MonoBehaviour
@@ -147,6 +148,7 @@ public class MeshBuilder : MonoBehaviour
     }
 }
 
+
 [CustomEditor(typeof(MeshBuilder)), CanEditMultipleObjects]
 public class ProcPlaneEditor : Editor
 {
@@ -158,11 +160,8 @@ public class ProcPlaneEditor : Editor
         if (EditorGUI.EndChangeCheck())
         {
             Undo.RecordObject(Cube, $"Changed the Cell Offset of {Cube.gameObject.name}");
-            Cube.CellOffset= Cube.transform.InverseTransformVector(newCellOffset - Cube.transform.position);
+            Cube.CellOffset = Cube.transform.InverseTransformVector(newCellOffset - Cube.transform.position);
             Cube.OnValidate();
-
         }
-
     }
-
 }
