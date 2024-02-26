@@ -273,7 +273,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 114474678}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.28, z: -5}
+  m_LocalPosition: {x: 0, y: 5, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1272,7 +1272,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577714981}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.62, z: -0.64}
+  m_LocalPosition: {x: 0, y: 7.98, z: -5.06}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2662,7 +2662,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SpringArmTarget: {fileID: 577714982}
   m_CameraMount: {fileID: 114474679}
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 880163267}
   m_MaxDist: 25
   m_MinDist: 2.5
   m_YawSensitivity: 0.5
