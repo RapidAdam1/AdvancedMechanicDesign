@@ -36,6 +36,7 @@ public partial struct TriggerSystem : ISystem
         }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
     }
 
+
     private EntityCommandBuffer GetECB(ref SystemState state)
     {
         EndSimulationEntityCommandBufferSystem.Singleton ECBSinglton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
@@ -72,7 +73,8 @@ public partial struct TriggerSystem : ISystem
                 IsEntityBTrigger && !IsEntityAEnemy)
                 return;
 
-
+            ECB.SetComponentEnabled<MarkForDeath>(entityB, true);
+            
 
         }
     }

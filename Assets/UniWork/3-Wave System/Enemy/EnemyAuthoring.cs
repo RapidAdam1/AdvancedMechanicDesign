@@ -25,6 +25,8 @@ public class EnemyAuthoring : MonoBehaviour
                 m_Speed = authoring.Speed,
                 m_Health = authoring.Health
             });
+            AddComponent(E, new MarkForDeath { });
+            SetComponentEnabled<MarkForDeath>(E,false);
         }
     }
 }
@@ -34,4 +36,9 @@ public struct Enemy : IComponentData
     public float m_Damage;
     public float m_Speed;
     public float m_Health;
+}
+
+public struct MarkForDeath : IComponentData, IEnableableComponent
+{
+
 }
