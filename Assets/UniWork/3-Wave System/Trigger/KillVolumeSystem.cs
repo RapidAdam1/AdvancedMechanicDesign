@@ -20,8 +20,8 @@ public partial struct KillVolumeSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        //TODO
         EntityCommandBuffer ecb = GetECB(ref state);
-     
         DestroyJob job = new DestroyJob
         {
             ECB = ecb
