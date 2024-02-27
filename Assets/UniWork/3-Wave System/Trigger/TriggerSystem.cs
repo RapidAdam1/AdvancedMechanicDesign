@@ -27,25 +27,30 @@ public partial struct TriggerSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
 
+        EntityCommandBuffer ecb = GetECB(ref state);
         state.Dependency = new TriggerOverlapJob
         {
+            ECB = ecb,
             KillVolumeLookup = SystemAPI.GetComponentLookup<KillVolumeTagComponent>(),
             EnemyTag = SystemAPI.GetComponentLookup<Enemy>()
         }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
     }
 
-    private EntityCommandBuffer.ParallelWriter GetECB(ref SystemState state)
+    private EntityCommandBuffer GetECB(ref SystemState state)
     {
-        BeginSimulationEntityCommandBufferSystem.Singleton ECBSinglton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        EndSimulationEntityCommandBufferSystem.Singleton ECBSinglton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ECBSinglton.CreateCommandBuffer(state.WorldUnmanaged);
-        return ecb.AsParallelWriter();
+        return ecb;
     }
 
     public struct TriggerOverlapJob : ITriggerEventsJob
     {
+
+
         //Lookup 
         [ReadOnly] public ComponentLookup<KillVolumeTagComponent> KillVolumeLookup;
         public ComponentLookup<Enemy> EnemyTag;
+        public EntityCommandBuffer ECB;
 
         public void Execute(TriggerEvent triggerEvent)
         {
@@ -67,7 +72,8 @@ public partial struct TriggerSystem : ISystem
                 IsEntityBTrigger && !IsEntityAEnemy)
                 return;
 
-            UnityEngine.Debug.Log("SHOUT");
+
+
         }
     }
 }
