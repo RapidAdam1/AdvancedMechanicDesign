@@ -26,9 +26,11 @@ public partial struct TriggerSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+
         state.Dependency = new TriggerOverlapJob
         {
-
+            KillVolumeLookup = SystemAPI.GetComponentLookup<KillVolumeTagComponent>(),
+            EnemyTag = SystemAPI.GetComponentLookup<Enemy>()
         }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
     }
 
@@ -45,7 +47,6 @@ public partial struct TriggerSystem : ISystem
         [ReadOnly] public ComponentLookup<KillVolumeTagComponent> KillVolumeLookup;
         public ComponentLookup<Enemy> EnemyTag;
 
-        [BurstCompile]
         public void Execute(TriggerEvent triggerEvent)
         {
             Entity entityA = triggerEvent.EntityA;
@@ -54,11 +55,19 @@ public partial struct TriggerSystem : ISystem
             bool IsEntityATrigger = KillVolumeLookup.HasComponent(entityA);
             bool IsEntityBTrigger = KillVolumeLookup.HasComponent(entityB);
 
+            if (IsEntityATrigger && IsEntityBTrigger)
+                return;
+
+            Debug.Log("Here");
+            
             bool IsEntityAEnemy = EnemyTag.HasComponent(entityA);
             bool IsEntityBEnemy = EnemyTag.HasComponent(entityB);
 
+            if (IsEntityATrigger && !IsEntityBEnemy ||
+                IsEntityBTrigger && !IsEntityAEnemy)
+                return;
 
-            UnityEngine.Debug.Log($"{IsEntityATrigger}+{IsEntityBTrigger}+{IsEntityAEnemy}+{IsEntityBEnemy}");
+            UnityEngine.Debug.Log("SHOUT");
         }
     }
 }

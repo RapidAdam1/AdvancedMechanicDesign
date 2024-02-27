@@ -9,6 +9,8 @@ public class TriggerTagAuthoring : MonoBehaviour
     {
         public override void Bake(TriggerTagAuthoring authoring)
         {
+            Entity E = GetEntity(TransformUsageFlags.Dynamic);
+            AddComponent(E, new TriggerTagComponent { });
         }
     }
 
