@@ -1,25 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
+using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 
+[BurstCompile]
+[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+[UpdateAfter(typeof(PhysicsSystemGroup))]
 public partial struct TriggerSystem : ISystem
 {
     private Entity KillVolume; 
     private ComponentLookup<LocalToWorld> LookupLocal2World;
+    
+    [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        LookupLocal2World = state.GetComponentLookup<LocalToWorld>();
         state.RequireForUpdate<KillVolumeTagComponent>();
+        state.RequireForUpdate<SimulationSingleton>();
     }
+
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        if(KillVolume == Entity.Null)
+        state.Dependency = new TriggerOverlapJob
         {
-            KillVolume = SystemAPI.GetSingletonEntity<KillVolumeTagComponent>();
-        }
+
+        }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
     }
 
     private EntityCommandBuffer.ParallelWriter GetECB(ref SystemState state)
@@ -29,11 +39,27 @@ public partial struct TriggerSystem : ISystem
         return ecb.AsParallelWriter();
     }
 
-}
-
-public struct OnTriggerOverlap : ITriggerEventsJob
-{
-    public void Execute(TriggerEvent triggerEvent)
+    public struct TriggerOverlapJob : ITriggerEventsJob
     {
+        //Lookup 
+        [ReadOnly] public ComponentLookup<KillVolumeTagComponent> KillVolumeLookup;
+        public ComponentLookup<Enemy> EnemyTag;
+
+        [BurstCompile]
+        public void Execute(TriggerEvent triggerEvent)
+        {
+            Entity entityA = triggerEvent.EntityA;
+            Entity entityB = triggerEvent.EntityB;
+
+            bool IsEntityATrigger = KillVolumeLookup.HasComponent(entityA);
+            bool IsEntityBTrigger = KillVolumeLookup.HasComponent(entityB);
+
+            bool IsEntityAEnemy = EnemyTag.HasComponent(entityA);
+            bool IsEntityBEnemy = EnemyTag.HasComponent(entityB);
+
+
+            UnityEngine.Debug.Log($"{IsEntityATrigger}+{IsEntityBTrigger}+{IsEntityAEnemy}+{IsEntityBEnemy}");
+        }
     }
 }
+

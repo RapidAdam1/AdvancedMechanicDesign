@@ -9,7 +9,8 @@ public class KillVolumeTagAuthoring : MonoBehaviour
     {
         public override void Bake(KillVolumeTagAuthoring authoring)
         {
-
+            Entity E = GetEntity(TransformUsageFlags.Dynamic);
+            AddComponent(E, new KillVolumeTagComponent { });
         }
     }
 }
