@@ -1,11 +1,15 @@
+using System;
+using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SpawnerAuthoring : MonoBehaviour
 {
     public GameObject EnemyPrefab;
-    public string InputFile;
+    [SerializeField] public string InputFile;
 }
 
 [BakingType]
@@ -28,5 +32,4 @@ public struct SpawnerComponent : IComponentData
     public float3 EnemyPosition;
 
     public float Timer;
-
 }

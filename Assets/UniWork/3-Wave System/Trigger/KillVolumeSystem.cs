@@ -10,7 +10,6 @@ using UnityEngine;
 [BurstCompile]
 public partial struct KillVolumeSystem : ISystem
 {
-
     public void OnUpdate(ref SystemState state)
     {
         EndSimulationEntityCommandBufferSystem.Singleton ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
@@ -21,26 +20,6 @@ public partial struct KillVolumeSystem : ISystem
             ecb.DestroyEntity(entity);
         }
     }
-
-
-  /*  [BurstCompile]
-    public void OnUpdate(ref SystemState state)
-    {
-        EntityCommandBuffer.ParallelWriter ecb = GetECB(ref state);
-
-        DestroyJob job = new DestroyJob
-        {
-            ECB = ecb
-        };
-        job.ScheduleParallel();
-    }
-
-    private EntityCommandBuffer.ParallelWriter GetECB(ref SystemState state)
-    {
-        BeginSimulationEntityCommandBufferSystem.Singleton ECBSinglton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        EntityCommandBuffer ecb = ECBSinglton.CreateCommandBuffer(state.WorldUnmanaged);
-        return ecb.AsParallelWriter();
-    }*/
 }
 
 public partial struct DestroyJob : IJobEntity 
