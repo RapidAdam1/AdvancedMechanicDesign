@@ -8,6 +8,7 @@ using UnityEngine;
 using Unity.Entities.UniversalDelegates;
 using System.Collections.Generic;
 using static Unity.Collections.AllocatorManager;
+using System.Collections;
 
 [BurstCompile]
 public partial struct SpawnerSystem : ISystem
@@ -25,47 +26,32 @@ public partial struct SpawnerSystem : ISystem
 
     private void UpdateSpawner(ref SystemState state, RefRW<SpawnerComponent> spawner)
     {
-
-
         List<ParsedBlock> ReadBlocks = ECSTomBenBlockParser.InitialDataRead(spawner.ValueRO.Location.ToString());
-        
+        ParsedBlock CurrentWave = ECSTomBenBlockParser.GetBlockFromID(spawner.ValueRO.CurrWaveIndex, "wave", ReadBlocks);
 
-        
-        ParsedBlock CurrentWave = ECSTomBenBlockParser.GetBlockFromID(spawner.ValueRO.CurrWaveIndex,"wave", ReadBlocks);
+        //Is Current Wave Valid
 
-        ReadWave(ref state, spawner, ReadBlocks, CurrentWave,spawner.ValueRO.CurrMatchIndex);
+        //
 
 
-        //DecrementTimer if !0
-        //GetWorld Entity Pop
-        int EnemiesInWorld = 5;
-        bool TimerActive = false;
-        bool Threshold = false;
-
-        if (TimerActive || Threshold)
-        {
-            if (TimerActive)
-            {
-                spawner.ValueRW.Timer -= Time.deltaTime;
-                if (spawner.ValueRO.Timer > 0)
-                {
-                    return;
-                }
-            }
-            if (Threshold)
-            {
-                if (EnemiesInWorld > spawner.ValueRO.Threshold)
-                    return;
-                    
-            }
-        }
+        ReadWaveAtStep(ref state, spawner, ReadBlocks, CurrentWave, spawner.ValueRO.CurrMatchIndex);
     }
 
-
-    public void ReadWave(ref SystemState state, RefRW<SpawnerComponent> spawner, List<ParsedBlock> Blocks, ParsedBlock CurrentWave, int Step)
+    public void ReadWaveAtStep(ref SystemState state, RefRW<SpawnerComponent> spawner, List<ParsedBlock> Blocks, ParsedBlock CurrentWave, int Step)
     {
         Regex RegexPattern = new Regex(@"(?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)");
         MatchCollection RegexMatch = RegexPattern.Matches(CurrentWave.content);
+       
+        
+        //IfFinished
+        if(Step > RegexMatch.Count)
+        {
+            //Next Wave
+            return;
+        }
+
+
+
 
         char Type = RegexMatch[Step].Groups[1].Value.ToString()[0];
         int ID = int.Parse(RegexMatch[Step].Groups[2].Value.ToString());
@@ -136,5 +122,14 @@ public partial struct SpawnerSystem : ISystem
         Entity TempCube = state.EntityManager.Instantiate(spawner.ValueRO.EnemyToSpawn);
         LocalTransform NewCubePos = LocalTransform.FromPosition(spawner.ValueRO.EnemyPosition);
         state.EntityManager.SetComponentData(TempCube, NewCubePos);
+    }
+
+    IEnumerator WaveSpawner()
+    {
+        while (true)
+        {
+
+        yield return new WaitForEndOfFrame();
+        }
     }
 }
