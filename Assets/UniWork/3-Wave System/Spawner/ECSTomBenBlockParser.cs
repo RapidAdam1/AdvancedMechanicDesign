@@ -47,5 +47,16 @@ public static class ECSTomBenBlockParser
         blockList.Add(UpdatedInfo) ;
     }
 
-    
+    public static ParsedBlock GetBlockFromID(int Id, string Type, List<ParsedBlock> BlockList)
+    {
+        ParsedBlock TempBlock = new ParsedBlock();
+        foreach (ParsedBlock Block in BlockList)
+        {
+            if(Block.id == Id && Block.type == Type)
+            {
+                return Block;
+            }
+        }
+        return TempBlock;
+    }
 }

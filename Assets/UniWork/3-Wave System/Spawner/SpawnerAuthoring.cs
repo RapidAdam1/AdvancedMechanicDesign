@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SpawnerAuthoring : MonoBehaviour
 {
@@ -22,14 +19,24 @@ public class SpawnerBaker : Baker<SpawnerAuthoring>
         {
             EnemyToSpawn = GetEntity(authoring.EnemyPrefab, TransformUsageFlags.Dynamic),
             EnemyPosition = authoring.EnemyPrefab.transform.position,
-            Timer = 0f
-        });
+            Timer = 0f,
+            Location = authoring.InputFile,
+
+            Threshold = 0,
+            CurrWaveIndex = 0,
+            CurrMatchIndex = 0,
+        }) ;
     }
 }
 public struct SpawnerComponent : IComponentData
 {
     public Entity EnemyToSpawn;
     public float3 EnemyPosition;
-
+    public FixedString512Bytes Location;
+    
     public float Timer;
+    public int Threshold;
+
+    public int CurrWaveIndex;
+    public int CurrMatchIndex;
 }
