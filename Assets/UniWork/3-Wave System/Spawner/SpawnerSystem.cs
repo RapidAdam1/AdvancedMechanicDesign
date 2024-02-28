@@ -40,10 +40,10 @@ public partial struct SpawnerSystem : ISystem
     private void UpdateSpawner(ref SystemState state, RefRW<SpawnerComponent> spawner)
     {
         spawner.ValueRW.Timer += SystemAPI.Time.DeltaTime;
-        if (spawner.ValueRO.Timer < spawner.ValueRO.SpawningFrequency) return;
+        if (spawner.ValueRO.Timer < 1) return;
 
         SpawnCube(ref state, spawner);
-        spawner.ValueRW.Timer -= spawner.ValueRO.SpawningFrequency;
+        spawner.ValueRW.Timer -= 1;
     }
 
     private void SpawnCube(ref SystemState state, RefRW<SpawnerComponent> spawner)
