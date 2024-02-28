@@ -16,9 +16,9 @@ public class TomBenBlockParser : MonoBehaviour
     public List<ParsedBlock> blocks = new List<ParsedBlock>();
 
 
-    List<ParsedBlock> Types = new List<ParsedBlock>();
-    List<ParsedBlock> Waves = new List<ParsedBlock>();
-    List<ParsedBlock> Clusters = new List<ParsedBlock>();
+    public List<ParsedBlock> Types = new List<ParsedBlock>();
+    public List<ParsedBlock> Waves = new List<ParsedBlock>();
+    public List<ParsedBlock> Clusters = new List<ParsedBlock>();
 
     int EnemiesSpawned = 0;
     ParsedBlock m_CurrentWave;
@@ -50,8 +50,8 @@ public class TomBenBlockParser : MonoBehaviour
 
         SortToLists(blocks);
 
-        m_CurrentWave = Waves[0];
-        StartCoroutine(ReadWave());
+        //m_CurrentWave = Waves[0];
+        //StartCoroutine(ReadWave());
     }
 
     private void ClearBuffer() => charBuffer = "";

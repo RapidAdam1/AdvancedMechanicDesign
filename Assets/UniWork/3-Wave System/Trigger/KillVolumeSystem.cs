@@ -1,50 +1,56 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-[UpdateInGroup(typeof(LateSimulationSystemGroup), OrderLast = true)]
+[BurstCompile]
 public partial struct KillVolumeSystem : ISystem
 {
-    private ComponentLookup<MarkForDeath> DeathTagLookup;
-    private Entity KillEntity;
-
-    public void OnCreate(ref SystemState state)
-    {
-        DeathTagLookup = state.GetComponentLookup<MarkForDeath>();
-        state.RequireForUpdate<MarkForDeath>();
-    }
-
 
     public void OnUpdate(ref SystemState state)
     {
-        //TODO
-        EntityCommandBuffer ecb = GetECB(ref state);
+        EndSimulationEntityCommandBufferSystem.Singleton ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
+        foreach ((RefRO<MarkForDeath> tag, Entity entity) in SystemAPI.Query<RefRO<MarkForDeath>>().WithEntityAccess())
+        {
+            ecb.DestroyEntity(entity);
+        }
+    }
+
+
+  /*  [BurstCompile]
+    public void OnUpdate(ref SystemState state)
+    {
+        EntityCommandBuffer.ParallelWriter ecb = GetECB(ref state);
+
         DestroyJob job = new DestroyJob
         {
             ECB = ecb
         };
-        job.Schedule();
+        job.ScheduleParallel();
     }
 
-    private EntityCommandBuffer GetECB(ref SystemState state)
+    private EntityCommandBuffer.ParallelWriter GetECB(ref SystemState state)
     {
-        EndSimulationEntityCommandBufferSystem.Singleton ECBSinglton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        BeginSimulationEntityCommandBufferSystem.Singleton ECBSinglton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ECBSinglton.CreateCommandBuffer(state.WorldUnmanaged);
-        return ecb;
-    }
+        return ecb.AsParallelWriter();
+    }*/
 }
 
 public partial struct DestroyJob : IJobEntity 
 {
-    public EntityCommandBuffer ECB;
-    public Entity KillEntity;
+    public EntityCommandBuffer.ParallelWriter ECB;
 
-    public void Execute()
+    public void Execute([ChunkIndexInQuery]int index,Entity e)
     {
-        ECB.DestroyEntity(KillEntity);
+        UnityEngine.Debug.Log($"Kill Object {e}");
+        ECB.DestroyEntity(index, e);
     }
 
 }

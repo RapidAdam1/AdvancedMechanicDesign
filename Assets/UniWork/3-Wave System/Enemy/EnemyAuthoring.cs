@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
+[UpdateInGroup(typeof(LateSimulationSystemGroup), OrderLast = true)]
 public class EnemyAuthoring : MonoBehaviour
 {
     float Damage = 0;

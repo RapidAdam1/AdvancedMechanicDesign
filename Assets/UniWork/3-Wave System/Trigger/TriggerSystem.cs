@@ -32,7 +32,8 @@ public partial struct TriggerSystem : ISystem
         {
             ECB = ecb,
             KillVolumeLookup = SystemAPI.GetComponentLookup<KillVolumeTagComponent>(),
-            EnemyTag = SystemAPI.GetComponentLookup<Enemy>()
+            EnemyTag = SystemAPI.GetComponentLookup<Enemy>(),
+            DeathTag = SystemAPI.GetComponentLookup<MarkForDeath>()
         }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
     }
 
@@ -51,6 +52,7 @@ public partial struct TriggerSystem : ISystem
         //Lookup 
         [ReadOnly] public ComponentLookup<KillVolumeTagComponent> KillVolumeLookup;
         public ComponentLookup<Enemy> EnemyTag;
+        public ComponentLookup<MarkForDeath> DeathTag;
         public EntityCommandBuffer ECB;
 
         public void Execute(TriggerEvent triggerEvent)
@@ -73,7 +75,10 @@ public partial struct TriggerSystem : ISystem
                 IsEntityBTrigger && !IsEntityAEnemy)
                 return;
 
-            ECB.SetComponentEnabled<MarkForDeath>(entityB, true);
+            if(entityA!=null && entityB !=null)
+            {
+                ECB.SetComponentEnabled<MarkForDeath>(entityB, true);
+            }
             
 
         }
