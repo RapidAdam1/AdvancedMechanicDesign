@@ -59,4 +59,20 @@ public static class ECSTomBenBlockParser
         }
         return TempBlock;
     }
+
+    static int GetNextWaveID(int CurrentWaveID ,List<ParsedBlock> BlockList)
+    {
+        bool Next = false;
+        foreach (ParsedBlock Block in BlockList)
+        {
+            if (Next)
+                return Block.id;
+            if(Block.id == CurrentWaveID)
+            {
+                Next = true;
+            }
+        }
+
+        return -1;
+    }
 }

@@ -25,6 +25,17 @@ public partial struct SpawnerSystem : ISystem
 
     private void UpdateSpawner(ref SystemState state, RefRW<SpawnerComponent> spawner)
     {
+
+
+        List<ParsedBlock> ReadBlocks = ECSTomBenBlockParser.InitialDataRead(spawner.ValueRO.Location.ToString());
+        
+
+        
+        ParsedBlock CurrentWave = ECSTomBenBlockParser.GetBlockFromID(spawner.ValueRO.CurrWaveIndex,"wave", ReadBlocks);
+
+        ReadWave(ref state, spawner, ReadBlocks, CurrentWave,spawner.ValueRO.CurrMatchIndex);
+
+
         //DecrementTimer if !0
         //GetWorld Entity Pop
         int EnemiesInWorld = 5;
