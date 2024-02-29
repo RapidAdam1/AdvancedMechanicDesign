@@ -52,8 +52,3 @@ public struct SpawnerComponent : IComponentData, IEnableableComponent
     public bool IsFirstRead;
     public bool WaitForNextWave;
 }
-
-public struct SpawnerCountComponent : IComponentData
-{
-    int SpawnedEnemies;
-}
