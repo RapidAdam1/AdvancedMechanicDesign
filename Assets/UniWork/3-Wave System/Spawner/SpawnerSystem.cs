@@ -36,6 +36,14 @@ public partial struct SpawnerSystem : ISystem
 
     private void UpdateSpawner(ref SystemState state, RefRW<SpawnerComponent> spawner)
     {
+
+        if (spawner.ValueRO.WaitForNextWave)
+        {
+            int Enemies = 4;
+            if (Enemies == 0)
+                spawner.ValueRW.WaitForNextWave = false;
+        }
+
         List<ParsedBlock> ReadBlocks = ECSTomBenBlockParser.InitialDataRead(spawner.ValueRO.Location.ToString());
         ParsedBlock CurrentWave = ECSTomBenBlockParser.GetBlockFromID(spawner.ValueRO.CurrWaveIndex, "wave", ReadBlocks);
 
@@ -44,7 +52,8 @@ public partial struct SpawnerSystem : ISystem
             Debug.LogError("INVALID WAVE");
             return;
         }
-        
+
+
         if(spawner.ValueRO.IsFirstRead)
         {
             ReadWaveAtStep(ref state, spawner, ReadBlocks, CurrentWave, spawner.ValueRO.CurrMatchIndex);
@@ -72,12 +81,11 @@ public partial struct SpawnerSystem : ISystem
         Regex RegexPattern = new Regex(@"(?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)");
         MatchCollection RegexMatch = RegexPattern.Matches(CurrentWave.content);
 
-        Debug.Log(RegexMatch[Step]);
+        Debug.Log($"Step: {Step} RegexMatches {RegexMatch.Count}");
         //IfFinished
 
         char Type = RegexMatch[Step].Groups[1].Value.ToString()[0];
         int ID = int.Parse(RegexMatch[Step].Groups[2].Value.ToString());
-
         if(spawner.ValueRO.IsFirstRead)
         {
             spawner.ValueRW.TimerReq = RegexMatch[Step].Groups[3].Success;
@@ -111,8 +119,9 @@ public partial struct SpawnerSystem : ISystem
         spawner.ValueRW.ThresholdReq = false;
         spawner.ValueRW.TimerReq = false;
 
-        if(spawner.ValueRW.CurrMatchIndex > RegexMatch.Count)
+        if(spawner.ValueRW.CurrMatchIndex > RegexMatch.Count-1)
         {
+            spawner.ValueRW.WaitForNextWave = true;
             spawner.ValueRW.CurrMatchIndex = 0;
             spawner.ValueRW.CurrWaveIndex = ECSTomBenBlockParser.GetNextWaveID(CurrentWave.id, Blocks);
             if(spawner.ValueRO.CurrWaveIndex == -1)
@@ -163,8 +172,8 @@ public partial struct SpawnerSystem : ISystem
                     break;
 
             }
-
         }
+
         Debug.Log($"Spawned {Type.id}");
         Entity TempCube = state.EntityManager.Instantiate(spawner.ValueRO.EnemyToSpawn);
         float3 RandomOffset = new float3 (0,0, UnityEngine.Random.Range(-5, 6));

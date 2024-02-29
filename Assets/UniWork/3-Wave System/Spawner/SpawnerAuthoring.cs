@@ -23,11 +23,12 @@ public class SpawnerBaker : Baker<SpawnerAuthoring>
             Location = authoring.InputFile,
 
             Threshold = 0,
-            CurrWaveIndex = 2,
+            CurrWaveIndex = 1,
             CurrMatchIndex = 0,
             IsFirstRead = true,
             TimerReq = false,
-            ThresholdReq = false
+            ThresholdReq = false,
+            WaitForNextWave = false
         }) ;
         SetComponentEnabled<SpawnerComponent>(Spawner, true);
     }
@@ -47,4 +48,5 @@ public struct SpawnerComponent : IComponentData, IEnableableComponent
     public int CurrMatchIndex;
 
     public bool IsFirstRead;
+    public bool WaitForNextWave;
 }
