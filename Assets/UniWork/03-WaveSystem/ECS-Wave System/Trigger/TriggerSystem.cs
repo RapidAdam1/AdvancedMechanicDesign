@@ -66,7 +66,6 @@ public partial struct TriggerSystem : ISystem
             if (IsEntityATrigger && IsEntityBTrigger)
                 return;
 
-            Debug.Log("Here");
             
             bool IsEntityAEnemy = EnemyTag.HasComponent(entityA);
             bool IsEntityBEnemy = EnemyTag.HasComponent(entityB);

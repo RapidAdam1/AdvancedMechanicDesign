@@ -7,6 +7,7 @@ public class SpawnerAuthoring : MonoBehaviour
 {
     public GameObject EnemyPrefab;
     [SerializeField] public string InputFile;
+    [SerializeField] public bool LoopSpawnWaves;
 }
 
 [BakingType]
@@ -29,7 +30,9 @@ public class SpawnerBaker : Baker<SpawnerAuthoring>
             IsFirstRead = true,
             TimerReq = false,
             ThresholdReq = false,
-            WaitForNextWave = false
+            WaitForNextWave = false,
+            Loopable = authoring.LoopSpawnWaves
+
         }) ;
         SetComponentEnabled<SpawnerComponent>(Spawner, true);
     }
@@ -51,4 +54,5 @@ public struct SpawnerComponent : IComponentData, IEnableableComponent
 
     public bool IsFirstRead;
     public bool WaitForNextWave;
+    public bool Loopable;
 }

@@ -7,7 +7,6 @@ using Unity.Transforms;
 using UnityEngine;
 using Unity.Mathematics;
 using System;
-using static UnityEngine.Rendering.DebugUI;
 
 [BurstCompile]
 public partial class SpawnerSystem : SystemBase
@@ -89,8 +88,6 @@ public partial class SpawnerSystem : SystemBase
         Regex RegexPattern = new Regex(@"(?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)");
         MatchCollection RegexMatch = RegexPattern.Matches(CurrentWave.content);
 
-        Debug.Log($"Step: {Step} RegexMatches {RegexMatch.Count}");
-        //IfFinished
 
         char Type = RegexMatch[Step].Groups[1].Value.ToString()[0];
         int ID = int.Parse(RegexMatch[Step].Groups[2].Value.ToString());
@@ -132,7 +129,11 @@ public partial class SpawnerSystem : SystemBase
             spawner.ValueRW.WaitForNextWave = true;
             spawner.ValueRW.CurrMatchIndex = 0;
             spawner.ValueRW.CurrWaveIndex = ECSTomBenBlockParser.GetNextWaveID(CurrentWave.id, Blocks);
-            Debug.Log(spawner.ValueRO.CurrWaveIndex);
+            if(spawner.ValueRO.CurrWaveIndex == -1 && spawner.ValueRO.Loopable)
+            {
+                spawner.ValueRW.CurrWaveIndex = ECSTomBenBlockParser.GetFirstWaveID(Blocks);
+            }
+            Debug.Log("Next Wave ID: "+spawner.ValueRO.CurrWaveIndex);
         }
     }
 
@@ -161,7 +162,6 @@ public partial class SpawnerSystem : SystemBase
         int Health = 0;
 
         Regex RegexPattern = new Regex(@"(\w+)=>(\d*)");
-        Debug.Log(Type.content);
         MatchCollection RegexMatch = RegexPattern.Matches(Type.content);
         for (int i = 0; i < RegexMatch.Count; i++)
         {
@@ -179,7 +179,6 @@ public partial class SpawnerSystem : SystemBase
 
             }
         }
-        Debug.Log($"Spawned {Damage}, {Speed},{Health}");
         Entity TempCube = EntityManager.Instantiate(spawner.ValueRO.EnemyToSpawn);
         float3 RandomOffset = new float3 (0,0, UnityEngine.Random.Range(-5, 6));
         LocalTransform NewCubePos = LocalTransform.FromPosition(spawner.ValueRO.EnemyPosition + RandomOffset);
