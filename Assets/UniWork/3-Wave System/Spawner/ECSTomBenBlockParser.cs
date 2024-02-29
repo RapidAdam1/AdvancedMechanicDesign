@@ -50,6 +50,7 @@ public static class ECSTomBenBlockParser
     public static ParsedBlock GetBlockFromID(int Id, string Type, List<ParsedBlock> BlockList)
     {
         ParsedBlock TempBlock = new ParsedBlock();
+        TempBlock.id = -1;
         foreach (ParsedBlock Block in BlockList)
         {
             if(Block.id == Id && Block.type == Type)
@@ -60,7 +61,7 @@ public static class ECSTomBenBlockParser
         return TempBlock;
     }
 
-    static int GetNextWaveID(int CurrentWaveID ,List<ParsedBlock> BlockList)
+    public static int GetNextWaveID(int CurrentWaveID ,List<ParsedBlock> BlockList)
     {
         bool Next = false;
         foreach (ParsedBlock Block in BlockList)
@@ -73,6 +74,16 @@ public static class ECSTomBenBlockParser
             }
         }
 
+        return -1;
+    }
+
+    public static int GetFirstWaveID(List<ParsedBlock> BlockList)
+    {
+        foreach (ParsedBlock Block in BlockList)
+        {
+            if(Block.type == "wave")
+                return Block.id;
+        }
         return -1;
     }
 }

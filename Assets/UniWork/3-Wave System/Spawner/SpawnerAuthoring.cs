@@ -23,12 +23,16 @@ public class SpawnerBaker : Baker<SpawnerAuthoring>
             Location = authoring.InputFile,
 
             Threshold = 0,
-            CurrWaveIndex = 0,
+            CurrWaveIndex = 2,
             CurrMatchIndex = 0,
+            IsFirstRead = true,
+            TimerReq = false,
+            ThresholdReq = false
         }) ;
+        SetComponentEnabled<SpawnerComponent>(Spawner, true);
     }
 }
-public struct SpawnerComponent : IComponentData
+public struct SpawnerComponent : IComponentData, IEnableableComponent
 {
     public Entity EnemyToSpawn;
     public float3 EnemyPosition;
@@ -36,7 +40,11 @@ public struct SpawnerComponent : IComponentData
     
     public float Timer;
     public int Threshold;
+    public bool ThresholdReq;
+    public bool TimerReq;
 
     public int CurrWaveIndex;
     public int CurrMatchIndex;
+
+    public bool IsFirstRead;
 }
