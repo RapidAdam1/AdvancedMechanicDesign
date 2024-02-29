@@ -48,6 +48,7 @@ public partial class SpawnerSystem : SystemBase
                 spawner.ValueRW.WaitForNextWave = false;
         }
 
+        //Replace ReadBlocks With a Buffer to improve performance, Didnt have time to do this
         List<ParsedBlock> ReadBlocks = ECSTomBenBlockParser.InitialDataRead(spawner.ValueRO.Location.ToString());
         ParsedBlock CurrentWave = ECSTomBenBlockParser.GetBlockFromID(spawner.ValueRO.CurrWaveIndex, "wave", ReadBlocks);
 
