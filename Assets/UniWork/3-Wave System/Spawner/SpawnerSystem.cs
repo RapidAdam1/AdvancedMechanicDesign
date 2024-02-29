@@ -36,11 +36,9 @@ public partial struct SpawnerSystem : ISystem
 
     private void UpdateSpawner(ref SystemState state, RefRW<SpawnerComponent> spawner)
     {
-
         if (spawner.ValueRO.WaitForNextWave)
         {
-            int Enemies = 4;
-            if (Enemies == 0)
+            if (GetEnemiesInScene() == 0)
                 spawner.ValueRW.WaitForNextWave = false;
         }
 
@@ -49,7 +47,10 @@ public partial struct SpawnerSystem : ISystem
 
         if (CurrentWave.id == -1)
         {
-            Debug.LogError("INVALID WAVE");
+
+            GetECB(ref state).SetComponentEnabled<SpawnerComponent>(spawner.ValueRO.ThisSpawner, false);
+            Debug.Log("Waves Complete Disabling The Spawner");
+
             return;
         }
 
@@ -62,9 +63,9 @@ public partial struct SpawnerSystem : ISystem
 
         if (spawner.ValueRO.ThresholdReq || spawner.ValueRO.TimerReq)
         {
-            int Enemies = 3; // Get Enemies
+
             spawner.ValueRW.Timer -= Time.deltaTime;
-            if (spawner.ValueRO.ThresholdReq && (Enemies <= spawner.ValueRO.Threshold) || spawner.ValueRO.TimerReq && (spawner.ValueRO.Timer <= 0))
+            if (spawner.ValueRO.ThresholdReq && (GetEnemiesInScene() <= spawner.ValueRO.Threshold) || spawner.ValueRO.TimerReq && (spawner.ValueRO.Timer <= 0))
             {
                 spawner.ValueRW.ThresholdReq = false;
                 spawner.ValueRW.TimerReq = false;
@@ -124,10 +125,6 @@ public partial struct SpawnerSystem : ISystem
             spawner.ValueRW.WaitForNextWave = true;
             spawner.ValueRW.CurrMatchIndex = 0;
             spawner.ValueRW.CurrWaveIndex = ECSTomBenBlockParser.GetNextWaveID(CurrentWave.id, Blocks);
-            if(spawner.ValueRO.CurrWaveIndex == -1)
-            {
-                //Disable Spawner Component
-            }
         }
     }
 
@@ -181,5 +178,20 @@ public partial struct SpawnerSystem : ISystem
         state.EntityManager.SetComponentData(TempCube, NewCubePos);
 
         // Set Enemy Component data
+    }
+
+
+    private EntityCommandBuffer GetECB(ref SystemState state)
+    {
+        BeginSimulationEntityCommandBufferSystem.Singleton ECBSinglton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ECBSinglton.CreateCommandBuffer(state.WorldUnmanaged);
+        return ecb;
+    }
+
+    int GetEnemiesInScene()
+    {
+        int EnemiesCount = 0;
+        //Get Enemy Count
+        return EnemiesCount;
     }
 }

@@ -17,6 +17,7 @@ public class SpawnerBaker : Baker<SpawnerAuthoring>
         Entity Spawner = GetEntity(TransformUsageFlags.None);
         AddComponent(Spawner, new SpawnerComponent
         {
+            ThisSpawner = Spawner,
             EnemyToSpawn = GetEntity(authoring.EnemyPrefab, TransformUsageFlags.Dynamic),
             EnemyPosition = authoring.EnemyPrefab.transform.position,
             Timer = 0f,
@@ -35,6 +36,7 @@ public class SpawnerBaker : Baker<SpawnerAuthoring>
 }
 public struct SpawnerComponent : IComponentData, IEnableableComponent
 {
+    public Entity ThisSpawner;
     public Entity EnemyToSpawn;
     public float3 EnemyPosition;
     public FixedString512Bytes Location;
