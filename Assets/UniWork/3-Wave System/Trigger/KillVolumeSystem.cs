@@ -18,18 +18,11 @@ public partial struct KillVolumeSystem : ISystem
         foreach ((RefRO<MarkForDeath> tag, Entity entity) in SystemAPI.Query<RefRO<MarkForDeath>>().WithEntityAccess())
         {
             ecb.DestroyEntity(entity);
+            Entity ECounter = SystemAPI.GetSingletonEntity<EnemyPopulationComp>();
+            EnemyPopulationComp Counter = SystemAPI.GetSingleton<EnemyPopulationComp>();
+            Counter.Value--;
+            state.EntityManager.SetComponentData(ECounter, Counter);
         }
     }
 }
 
-public partial struct DestroyJob : IJobEntity 
-{
-    public EntityCommandBuffer.ParallelWriter ECB;
-
-    public void Execute([ChunkIndexInQuery]int index,Entity e)
-    {
-        UnityEngine.Debug.Log($"Kill Object {e}");
-        ECB.DestroyEntity(index, e);
-    }
-
-}

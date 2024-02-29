@@ -1,14 +1,16 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Unity.Collections;
 
 public static class ECSTomBenBlockParser
 {
-    public static List<ParsedBlock> InitialDataRead(string filepath)
+    public static List<ParsedBlock> InitialDataRead(FixedString512Bytes filepath)
     {
+        
         List<ParsedBlock> Blocks = new List<ParsedBlock>();
         string fileContent = "";
-        fileContent = File.ReadAllText(filepath);
+        fileContent = File.ReadAllText(filepath.ToString());
 
 
         Regex FilePattern = new Regex(@"(type|cluster|wave) - (\d)(.*?) (?:_Tom (.*?) _Ben)"); //Finds All Content
@@ -64,17 +66,22 @@ public static class ECSTomBenBlockParser
     public static int GetNextWaveID(int CurrentWaveID ,List<ParsedBlock> BlockList)
     {
         bool Next = false;
+        ParsedBlock TempBlock = new ParsedBlock();
+        TempBlock.id = -1;
         foreach (ParsedBlock Block in BlockList)
         {
             if (Next)
-                return Block.id;
-            if(Block.id == CurrentWaveID)
+            {
+                TempBlock.id = Block.id;
+                break;
+            }
+            if(Block.id == CurrentWaveID && Block.type=="wave")
             {
                 Next = true;
             }
         }
 
-        return -1;
+        return TempBlock.id;
     }
 
     public static int GetFirstWaveID(List<ParsedBlock> BlockList)

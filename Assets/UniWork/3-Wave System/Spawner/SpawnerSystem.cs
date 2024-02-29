@@ -10,31 +10,38 @@ using System;
 using static UnityEngine.Rendering.DebugUI;
 
 [BurstCompile]
-public partial struct SpawnerSystem : ISystem
+public partial class SpawnerSystem : SystemBase
 {
 
     [BurstCompile]
-    public void OnCreate(ref SystemState state)
+    protected override void OnCreate()
     {
+        RequireForUpdate<EnemyPopulationComp>();
+        RequireForUpdate<SpawnerComponent>();
+
+    }
+    [BurstCompile]
+    protected override void OnStartRunning()
+    {
+        Debug.Log("StartRunning");
 
         foreach (RefRW<SpawnerComponent> spawner in SystemAPI.Query<RefRW<SpawnerComponent>>())
         {
             spawner.ValueRW.CurrWaveIndex = ECSTomBenBlockParser.GetFirstWaveID(ECSTomBenBlockParser.InitialDataRead(spawner.ValueRO.Location.ToString()));
             Debug.Log("First Read, Set the Wave");
-
         }
     }
 
     [BurstCompile]
-    public void OnUpdate(ref SystemState state)
+    protected override void OnUpdate()
     {
         foreach (RefRW<SpawnerComponent> spawner in SystemAPI.Query<RefRW<SpawnerComponent>>())
         {
-            UpdateSpawner(ref state, spawner);
+            UpdateSpawner(spawner);
         }
     }
 
-    private void UpdateSpawner(ref SystemState state, RefRW<SpawnerComponent> spawner)
+    private void UpdateSpawner(RefRW<SpawnerComponent> spawner)
     {
         if (spawner.ValueRO.WaitForNextWave)
         {
@@ -48,7 +55,7 @@ public partial struct SpawnerSystem : ISystem
         if (CurrentWave.id == -1)
         {
 
-            GetECB(ref state).SetComponentEnabled<SpawnerComponent>(spawner.ValueRO.ThisSpawner, false);
+            EntityManager.SetComponentEnabled<SpawnerComponent>(spawner.ValueRO.ThisSpawner, false);
             Debug.Log("Waves Complete Disabling The Spawner");
 
             return;
@@ -57,14 +64,14 @@ public partial struct SpawnerSystem : ISystem
 
         if(spawner.ValueRO.IsFirstRead)
         {
-            ReadWaveAtStep(ref state, spawner, ReadBlocks, CurrentWave, spawner.ValueRO.CurrMatchIndex);
+            ReadWaveAtStep(spawner, ReadBlocks, CurrentWave, spawner.ValueRO.CurrMatchIndex);
             return;
         }
 
         if (spawner.ValueRO.ThresholdReq || spawner.ValueRO.TimerReq)
         {
 
-            spawner.ValueRW.Timer -= Time.deltaTime;
+            spawner.ValueRW.Timer -= SystemAPI.Time.DeltaTime;
             if (spawner.ValueRO.ThresholdReq && (GetEnemiesInScene() <= spawner.ValueRO.Threshold) || spawner.ValueRO.TimerReq && (spawner.ValueRO.Timer <= 0))
             {
                 spawner.ValueRW.ThresholdReq = false;
@@ -73,11 +80,11 @@ public partial struct SpawnerSystem : ISystem
             else
                 return;
         }
-        ReadWaveAtStep(ref state, spawner, ReadBlocks, CurrentWave, spawner.ValueRO.CurrMatchIndex);
+        ReadWaveAtStep(spawner, ReadBlocks, CurrentWave, spawner.ValueRO.CurrMatchIndex);
 
     }
 
-    public void ReadWaveAtStep(ref SystemState state, RefRW<SpawnerComponent> spawner, List<ParsedBlock> Blocks, ParsedBlock CurrentWave, int Step)
+    public void ReadWaveAtStep(RefRW<SpawnerComponent> spawner, List<ParsedBlock> Blocks, ParsedBlock CurrentWave, int Step)
     {
         Regex RegexPattern = new Regex(@"(?:(\w)(\d)*(?:\<(\d*)\>)*(?:\[(\d)\])*[^\!\?]*)");
         MatchCollection RegexMatch = RegexPattern.Matches(CurrentWave.content);
@@ -111,9 +118,9 @@ public partial struct SpawnerSystem : ISystem
         }
 
         if (Type == 'T')
-            SpawnType(ref state,spawner,ECSTomBenBlockParser.GetBlockFromID(ID,"type",Blocks));
+            SpawnType(spawner,ECSTomBenBlockParser.GetBlockFromID(ID,"type",Blocks));
         else if (Type == 'C')
-            ReadCluster(ref state,spawner,Blocks, ECSTomBenBlockParser.GetBlockFromID(ID, "cluster", Blocks));
+            ReadCluster(spawner,Blocks, ECSTomBenBlockParser.GetBlockFromID(ID, "cluster", Blocks));
 
         spawner.ValueRW.CurrMatchIndex++;
         spawner.ValueRW.IsFirstRead = true;
@@ -125,11 +132,12 @@ public partial struct SpawnerSystem : ISystem
             spawner.ValueRW.WaitForNextWave = true;
             spawner.ValueRW.CurrMatchIndex = 0;
             spawner.ValueRW.CurrWaveIndex = ECSTomBenBlockParser.GetNextWaveID(CurrentWave.id, Blocks);
+            Debug.Log(spawner.ValueRO.CurrWaveIndex);
         }
     }
 
 
-    void ReadCluster(ref SystemState state, RefRW<SpawnerComponent> spawner, List<ParsedBlock> Blocks,ParsedBlock Cluster)
+    void ReadCluster(RefRW<SpawnerComponent> spawner, List<ParsedBlock> Blocks,ParsedBlock Cluster)
     {
         Regex RegexPattern = new Regex(@"(\d*):(\d*)");
         MatchCollection RegexMatch = RegexPattern.Matches(Cluster.content);
@@ -140,19 +148,20 @@ public partial struct SpawnerSystem : ISystem
 
             for (int j = 0; j < IDCount; j++)
             {
-                SpawnType(ref state,spawner, ECSTomBenBlockParser.GetBlockFromID(ReadID, "type", Blocks));
+                SpawnType(spawner, ECSTomBenBlockParser.GetBlockFromID(ReadID, "type", Blocks));
             }
         }
     }
 
 
-    public void SpawnType(ref SystemState state, RefRW<SpawnerComponent> spawner, ParsedBlock Type)
+    public void SpawnType( RefRW<SpawnerComponent> spawner, ParsedBlock Type)
     {
         int Damage = 0;
         int Speed = 0;
         int Health = 0;
 
         Regex RegexPattern = new Regex(@"(\w+)=>(\d*)");
+        Debug.Log(Type.content);
         MatchCollection RegexMatch = RegexPattern.Matches(Type.content);
         for (int i = 0; i < RegexMatch.Count; i++)
         {
@@ -165,33 +174,32 @@ public partial struct SpawnerSystem : ISystem
                     Speed = int.Parse(RegexMatch[i].Groups[2].ToString());
                     break;
                 case "damage":
-                    Health = int.Parse(RegexMatch[i].Groups[2].ToString());
+                    Damage = int.Parse(RegexMatch[i].Groups[2].ToString());
                     break;
 
             }
         }
-
-        Debug.Log($"Spawned {Type.id}");
-        Entity TempCube = state.EntityManager.Instantiate(spawner.ValueRO.EnemyToSpawn);
+        Debug.Log($"Spawned {Damage}, {Speed},{Health}");
+        Entity TempCube = EntityManager.Instantiate(spawner.ValueRO.EnemyToSpawn);
         float3 RandomOffset = new float3 (0,0, UnityEngine.Random.Range(-5, 6));
         LocalTransform NewCubePos = LocalTransform.FromPosition(spawner.ValueRO.EnemyPosition + RandomOffset);
-        state.EntityManager.SetComponentData(TempCube, NewCubePos);
+        EntityManager.SetComponentData(TempCube, NewCubePos);
 
-        // Set Enemy Component data
-    }
+        Enemy DataSet = EntityManager.GetComponentData<Enemy>(TempCube);
+        DataSet.m_Health = Health;
+        DataSet.m_Speed = Speed;
+        DataSet.m_Damage= Damage;
+        EntityManager.SetComponentData(TempCube, DataSet);
 
+        Entity ECounter = SystemAPI.GetSingletonEntity<EnemyPopulationComp>();
+        EnemyPopulationComp Counter = SystemAPI.GetSingleton<EnemyPopulationComp>();
+        Counter.Value++;
+        EntityManager.SetComponentData(ECounter, Counter);
 
-    private EntityCommandBuffer GetECB(ref SystemState state)
-    {
-        BeginSimulationEntityCommandBufferSystem.Singleton ECBSinglton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        EntityCommandBuffer ecb = ECBSinglton.CreateCommandBuffer(state.WorldUnmanaged);
-        return ecb;
     }
 
     int GetEnemiesInScene()
     {
-        int EnemiesCount = 0;
-        //Get Enemy Count
-        return EnemiesCount;
+        return SystemAPI.GetSingleton<EnemyPopulationComp>().Value;
     }
 }

@@ -19,7 +19,7 @@ public class SpawnerBaker : Baker<SpawnerAuthoring>
         {
             ThisSpawner = Spawner,
             EnemyToSpawn = GetEntity(authoring.EnemyPrefab, TransformUsageFlags.Dynamic),
-            EnemyPosition = authoring.EnemyPrefab.transform.position,
+            EnemyPosition = authoring.transform.position,
             Timer = 0f,
             Location = authoring.InputFile,
 
@@ -51,4 +51,9 @@ public struct SpawnerComponent : IComponentData, IEnableableComponent
 
     public bool IsFirstRead;
     public bool WaitForNextWave;
+}
+
+public struct SpawnerCountComponent : IComponentData
+{
+    int SpawnedEnemies;
 }
