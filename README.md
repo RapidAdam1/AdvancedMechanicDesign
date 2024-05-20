@@ -2,7 +2,7 @@
 Staffordshire University 23/24 Advanced Mechanics Design<br>
 This Work Achieved 92% for the Project
 <br>
-<h1>Spline Generation</h1>
+<h2>Spline Generation</h2>
 This Section of the Project focussed on Mesh Lofting from positions on a spline.
 <h4>Mesh Lofting - Train Tracks</h4>
 <li>Rail Track (Closed & Open Spline) </li>
